@@ -1,11 +1,18 @@
-import logo from './logo.svg';
-import './App.css';
+import {AuthProvider} from "./contexts/AuthContext";
+import {useSocketListenner} from "./hooks/useSocketListenner";
+import Login from "./pages/Login";
 
-function App() {
+function AppContext(){
+    useSocketListenner()
+    return <Login/>
+}
+
+function App
+() {
   return (
-        <div className="App">
-          <p>hihi</p>
-        </div>
+      <AuthProvider>
+          <AppContext/>
+      </AuthProvider>
   );
 }
 
