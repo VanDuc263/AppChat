@@ -6,7 +6,7 @@ interface LoginResponse {
     event: string;
     status: "success" | "error";
     data: {
-        user: string;
+        RE_LOGIN_CODE: string;
         [key: string]: any;
     };
 }
@@ -22,9 +22,14 @@ export function useAuthSocketListener() {
             try {
                 const res: LoginResponse = JSON.parse(ev.data);
 
-                console.log(res);
 
                 if (res.event === "LOGIN" && res.status === "success") {
+                    const code = res.data.RE_LOGIN_CODE;
+
+                    setUser(prev => ({
+                        ...prev,
+                        code: "new-code"
+                    }));
 
                 }
             } catch (e) {
