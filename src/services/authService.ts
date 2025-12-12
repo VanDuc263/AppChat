@@ -1,22 +1,37 @@
 import {getSocket} from "./socket";
 
-export function loginApi (username : string,password : string) {
-    const socket = getSocket()
-    socket.send(JSON.stringify(
-        {
-            action : "onchat",
-            data : {
-                event : "LOGIN",
-                data : {
-                    user : username,
-                    pass : password
+export function loginApi(username: string, password: string) {
+    const socket = getSocket();
+
+    if (socket.readyState === WebSocket.OPEN) {
+        socket.send(JSON.stringify({
+            action: "onchat",
+            data: {
+                event: "LOGIN",
+                data: {
+                    user: username,
+                    pass: password
                 }
             }
-        }
-    ))
+        }));
+    } else {
+        socket.addEventListener("open", () => {
+            socket.send(JSON.stringify({
+                action: "onchat",
+                data: {
+                    event: "LOGIN",
+                    data: {
+                        user: username,
+                        pass: password
+                    }
+                }
+            }));
+        }, { once: true });
+    }
 }
 
-export function reLogin(username : string,code : string){
+
+export function reLoginApi(username : string,code : string){
     const socket = getSocket()
     socket.send(JSON.stringify(
         {

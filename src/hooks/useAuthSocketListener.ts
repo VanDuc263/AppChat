@@ -15,6 +15,8 @@ export function useAuthSocketListener() {
     const socket: WebSocket | null = getSocket();
     const {  user,setUser } = useAuth();
 
+
+
     useEffect(() => {
         if (!socket) return;
 
@@ -22,14 +24,22 @@ export function useAuthSocketListener() {
             try {
                 const res: LoginResponse = JSON.parse(ev.data);
 
-
                 if (res.event === "LOGIN" && res.status === "success") {
                     const code = res.data.RE_LOGIN_CODE;
 
                     setUser(prev => ({
-                        ...prev,
-                        code: "new-code"
+                        username: localStorage.getItem("username") || "",
+                        code: code,
+                        ...prev
                     }));
+
+
+                    localStorage.setItem("re_login",code)
+
+                }
+                if(res.event === "LOGIN" && res.status === "error"){
+                    localStorage.removeItem("re_login");
+                    localStorage.removeItem("username");
 
                 }
             } catch (e) {
@@ -39,6 +49,7 @@ export function useAuthSocketListener() {
 
         return () => {
             socket.onmessage = null;
+
         };
     }, [socket]);
 }

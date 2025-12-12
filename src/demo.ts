@@ -39,7 +39,7 @@ function sendReLogin(username, code) {
         console.log("RE_LOGIN response:", res);
     };
 }
-getReLoginCode("22130081@st.hcmuaf.edu.vn", "minhhieu", (code) => {
+getReLoginCode("22130080@st.hcmuaf.edu.vn", "minhhieu", (code) => {
     console.log("Received RE_LOGIN_CODE:", code);
     sendReLogin("22130081@st.hcmuaf.edu.vn", code);
 });
