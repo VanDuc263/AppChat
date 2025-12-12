@@ -1,10 +1,10 @@
 import {AuthProvider} from "./contexts/AuthContext";
 import {useAuthSocketListener} from "./hooks/useAuthSocketListener";
-import Login from "./pages/Login";
+import AppRoutes from "./routes/AppRoutes";
 
 function AppContext(){
     useAuthSocketListener()
-    return <Login/>
+    return <AppRoutes/>
 }
 
 function App() {
