@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 import { connectSocket } from "../services/socket";
+import {loginApi,logoutApi} from "../services/authService";
 
-// ---- Types -----
 interface User {
     username: string;
     [key: string]: any;
@@ -18,37 +18,18 @@ interface AuthProviderProps {
     children: ReactNode;
 }
 
-// ---- Context -----
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// ---- Provider -----
 export function AuthProvider({ children }: AuthProviderProps) {
     const [user, setUser] = useState<User | null>(null);
     const socket: WebSocket = connectSocket();
 
     const login = (username: string, password: string) => {
-        socket.send(
-            JSON.stringify({
-                action: "onchat",
-                data: {
-                    event: "LOGIN",
-                    data: { user: username, pass: password },
-                },
-            })
-        );
+        loginApi(username,password)
     };
 
     const logout = () => {
-        socket.send(
-            JSON.stringify({
-                action: "onchat",
-                data: {
-                    event: "LOGOUT",
-                },
-            })
-        );
-
-        setUser(null);
+        logout()
     };
 
     return (
@@ -58,7 +39,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     );
 }
 
-// ---- Hook ----
 export const useAuth = () => {
     const context = useContext(AuthContext);
     if (!context) {

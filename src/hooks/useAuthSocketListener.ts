@@ -32,7 +32,6 @@ export function useAuthSocketListener() {
             }
         };
 
-        // cleanup
         return () => {
             socket.onmessage = null;
         };
