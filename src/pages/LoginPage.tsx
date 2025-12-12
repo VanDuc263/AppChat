@@ -17,7 +17,7 @@ const LoginPage: React.FC = () => {
                 onClick={() =>
                     login(username,pass)
                 }
-                >
+            >
                 Login
             </button>
         </div>

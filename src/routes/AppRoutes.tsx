@@ -6,6 +6,7 @@ import ChatPage from "../pages/ChatPage";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { user } = useAuth();
+    console.log(user)
     return user ? children : <Navigate to="/login" replace />;
 }
 
