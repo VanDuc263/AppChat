@@ -4,12 +4,13 @@ import {loginApi,logoutApi} from "../services/authService";
 
 interface User {
     username: string;
+    code : string;
     [key: string]: any;
 }
 
 interface AuthContextType {
     user: User | null;
-    setUser: (user: User | null) => void;
+    setUser: React.Dispatch<React.SetStateAction<User | null>>;
     login: (username: string, password: string) => void;
     logout: () => void;
 }
@@ -25,11 +26,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const socket: WebSocket = connectSocket();
 
     const login = (username: string, password: string) => {
+        setUser(
+            {
+                username : username,
+                code : ""
+            }
+        )
+
         loginApi(username,password)
     };
 
     const logout = () => {
-        logout()
+        logoutApi()
     };
 
     return (

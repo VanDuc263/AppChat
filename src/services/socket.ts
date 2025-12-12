@@ -8,7 +8,7 @@ export function connectSocket(): WebSocket {
         socket.onopen = () => console.log("WebSocket connected");
         socket.onclose = () => {
             console.log("WebSocket closed");
-            socket = null; // cho reconnect
+            socket = null; 
         };
         socket.onerror = (e) => console.error("WebSocket error:", e);
     }
