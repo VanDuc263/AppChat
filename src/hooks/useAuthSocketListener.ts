@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { getSocket } from "../services/socket";
 import { useAuth } from "../contexts/AuthContext";
+import {reLoginApi} from "../services/authService";
+import {getMessageApi} from "../services/chatService";
 
 interface LoginResponse {
     event: string;
@@ -13,43 +15,62 @@ interface LoginResponse {
 
 export function useAuthSocketListener() {
     const socket: WebSocket | null = getSocket();
-    const {  user,setUser } = useAuth();
-
-
+    const { user, setUser } = useAuth();
 
     useEffect(() => {
         if (!socket) return;
 
-        socket.onmessage = (ev: MessageEvent<string>) => {
+        const tryReLogin = () => {
+            const username = localStorage.getItem("username");
+            const reLoginCode = localStorage.getItem("re_login");
+            if (!username || !reLoginCode) return;
+
+            if (socket.readyState === WebSocket.OPEN) {
+                reLoginApi(username,reLoginCode)
+            } else {
+                socket.addEventListener(
+                    "open",
+                    () => {
+                        reLoginApi(username,reLoginCode)
+                    },
+                    { once: true }
+                );
+            }
+        };
+
+        tryReLogin();
+
+        const listener = (ev: MessageEvent<string>) => {
             try {
                 const res: LoginResponse = JSON.parse(ev.data);
+                if ((res.event === "LOGIN" || res.event === "RE_LOGIN") && res.status === "success") {
 
-                if (res.event === "LOGIN" && res.status === "success") {
+
+
                     const code = res.data.RE_LOGIN_CODE;
-
                     setUser(prev => ({
                         username: localStorage.getItem("username") || "",
-                        code: code,
+                        code,
                         ...prev
                     }));
+                    localStorage.setItem("re_login", code);
 
-
-                    localStorage.setItem("re_login",code)
 
                 }
-                if(res.event === "LOGIN" && res.status === "error"){
-                    localStorage.removeItem("re_login");
-                    localStorage.removeItem("username");
 
+                if (res.event === "LOGIN" && res.status === "error") {
+                    localStorage.removeItem("username");
+                    localStorage.removeItem("re_login");
                 }
             } catch (e) {
                 console.error("Invalid JSON from WebSocket:", e);
             }
         };
 
-        return () => {
-            socket.onmessage = null;
+        socket.addEventListener("message", listener);
 
+        return () => {
+            socket.removeEventListener("message", listener);
         };
-    }, [socket]);
+    }, [socket, setUser]);
 }

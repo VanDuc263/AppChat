@@ -1,37 +1,53 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { getSocket } from "../services/socket";
+import { sendMessageApi,getMessageApi } from "../services/chatService"
 
 interface Message {
-    from: string;
+    id : bigint;
+    name: string;
+    type : bigint;
     to: string;
-    message: string;
+    mes: string;
 }
 
 interface MessageContextType {
     messages: Message[];
+    page: number;
     sendMessage: (to: string, text: string) => void;
+    getMessage: (username: string, page?: number) => void;
+    addMessage: (message: Message) => void;
+    addMessages: (messages: Message[]) => void;
+    setPage: (page: number) => void;
 }
 
 const MessageContext = createContext<MessageContextType | null>(null);
 
 export function MessageProvider({ children }: { children: ReactNode }) {
     const [messages, setMessages] = useState<Message[]>([]);
-    const socket = getSocket();
+    const [page,setPage] = useState<number>(1)
 
     const sendMessage = (to: string, text: string) => {
-        socket?.send(JSON.stringify({
-            action: "onchat",
-            data: {
-                event: "SEND_MESSAGE",
-                data: { to, message: text }   // gửi đúng field "message"
-            }
-        }));
+        sendMessageApi(to,text)
+    };
+    const getMessage = (user : string,pageParam? : number) => {
+        try{
+            const p = pageParam ?? page
+            setPage(p)
+            getMessageApi(user,p)
+        }catch (e){
+
+        }
+    }
+    const addMessage = (message: Message) => {
+        setMessages(prev => [...prev, message]);
     };
 
-   
+    const addMessages = (newMessages: Message[]) => {
+        setMessages(prev => [...prev, ...newMessages]);
+    };
 
     return (
-        <MessageContext.Provider value={{ messages, sendMessage }}>
+        <MessageContext.Provider value={{ messages,page, sendMessage,getMessage,addMessage,addMessages,setPage }}>
             {children}
         </MessageContext.Provider>
     );
