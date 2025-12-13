@@ -2,11 +2,11 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
 import LoginPage from "../pages/LoginPage";
 import ChatPage from "../pages/ChatPage";
+import {MessageProvider} from "../contexts/MessageContext";
 
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
     const { user } = useAuth();
-    console.log(user)
     return user ? children : <Navigate to="/login" replace />;
 }
 
@@ -20,7 +20,9 @@ export default function AppRoutes(){
                     path="/chat"
                     element={
                         <ProtectedRoute>
-                            <ChatPage/>
+                            <MessageProvider>
+                                <ChatPage/>
+                            </MessageProvider>
                         </ProtectedRoute>
 
                     }

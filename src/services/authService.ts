@@ -1,60 +1,69 @@
-import {getSocket} from "./socket";
+import { getSocket } from "./socket";
 
 export function loginApi(username: string, password: string) {
     const socket = getSocket();
+    if (!socket) {
+        console.error("WebSocket chưa sẵn sàng. Hãy gọi connectSocket trước.");
+        return;
+    }
 
-    if (socket.readyState === WebSocket.OPEN) {
+    const sendLogin = () => {
         socket.send(JSON.stringify({
             action: "onchat",
             data: {
                 event: "LOGIN",
-                data: {
-                    user: username,
-                    pass: password
-                }
+                data: { user: username, pass: password }
             }
         }));
+    };
+
+    if (socket.readyState === WebSocket.OPEN) {
+        sendLogin();
     } else {
-        socket.addEventListener("open", () => {
-            socket.send(JSON.stringify({
-                action: "onchat",
-                data: {
-                    event: "LOGIN",
-                    data: {
-                        user: username,
-                        pass: password
-                    }
-                }
-            }));
-        }, { once: true });
+        socket.addEventListener("open", sendLogin, { once: true });
     }
 }
 
+export function reLoginApi(username: string, code: string) {
+    const socket = getSocket();
+    if (!socket) {
+        console.error("WebSocket chưa sẵn sàng. Hãy gọi connectSocket trước.");
+        return;
+    }
 
-export function reLoginApi(username : string,code : string){
-    const socket = getSocket()
-    socket.send(JSON.stringify(
-        {
+    const sendReLogin = () => {
+        socket.send(JSON.stringify({
             action: "onchat",
             data: {
                 event: "RE_LOGIN",
-                data: {
-                    user: username,
-                    code: code
-                }
+                data: { user: username, code }
             }
-        }
-    ))
+        }));
+    };
+
+    if (socket.readyState === WebSocket.OPEN) {
+        sendReLogin();
+    } else {
+        socket.addEventListener("open", sendReLogin, { once: true });
+    }
 }
 
-export function logoutApi () {
-    const socket = getSocket()
-    socket.send(JSON.stringify(
-        {
-            action : "onchat",
-            data : {
-                event : "LOGOUT",
-            }
-        }
-    ))
+export function logoutApi() {
+    const socket = getSocket();
+    if (!socket) {
+        console.error("WebSocket chưa sẵn sàng. Hãy gọi connectSocket trước.");
+        return;
+    }
+
+    const sendLogout = () => {
+        socket.send(JSON.stringify({
+            action: "onchat",
+            data: { event: "LOGOUT" }
+        }));
+    };
+    if (socket.readyState === WebSocket.OPEN) {
+        sendLogout();
+    } else {
+        socket.addEventListener("open", sendLogout, { once: true });
+    }
 }
