@@ -3,6 +3,7 @@ import { useAuth } from "../contexts/AuthContext";
 import LoginPage from "../pages/LoginPage";
 import ChatPage from "../pages/ChatPage";
 import {MessageProvider} from "../contexts/MessageContext";
+import React from "react";
 
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
