@@ -19,10 +19,17 @@ export function sendMessageApi(toUser : string,mes : string){
 }
 
 export function getMessageApi(targetUser : string,page : number){
-    const socket = getSocket()
+    const socket = getSocket();
 
-    socket.send(JSON.stringify(
-        {
+    console.log("target user : "  + targetUser)
+
+    if (!socket) {
+        console.error("WebSocket chưa sẵn sàng. Hãy gọi connectSocket trước.");
+        return;
+    }
+
+    const sendGetMessage = () => {
+        socket.send(JSON.stringify({
             action: "onchat",
             data: {
                 event: "GET_PEOPLE_CHAT_MES",
@@ -31,7 +38,18 @@ export function getMessageApi(targetUser : string,page : number){
                     page: page
                 }
             }
-        }
-    ))
+            // action: "onchat",
+            // data: {
+            //     event: "GET_USER_LIST"
+            // }
+        }));
+    };
+
+    if (socket.readyState === WebSocket.OPEN) {
+        sendGetMessage();
+    } else {
+        socket.addEventListener("open", sendGetMessage, { once: true });
+    }
+
 
 }

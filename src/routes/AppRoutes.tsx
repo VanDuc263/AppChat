@@ -20,9 +20,7 @@ export default function AppRoutes(){
                     path="/chat"
                     element={
                         <ProtectedRoute>
-                            <MessageProvider>
                                 <ChatPage/>
-                            </MessageProvider>
                         </ProtectedRoute>
 
                     }

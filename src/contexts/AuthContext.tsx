@@ -31,6 +31,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const login = (username: string, password: string) => {
         localStorage.setItem("username",username)
         loginApi(username,password)
+
     };
 
     const logout = () => {
