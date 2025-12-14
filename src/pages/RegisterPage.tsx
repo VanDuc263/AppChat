@@ -1,6 +1,6 @@
 // RegisterPage.tsx
 import { useState } from "react";
-import "../styles/RegisterPage.css";
+import "../RegisterPage.css";
 
 const RegisterPage = () => {
     const [username, setUsername] = useState("");
