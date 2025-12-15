@@ -1,5 +1,35 @@
 import { getSocket } from "./socket";
 
+export function registerApi(username: string, password: string) {
+    const socket = getSocket();
+
+    if (!socket) {
+        console.error("WebSocket chưa sẵn sàng. Hãy gọi connectSocket trước.");
+        return;
+    }
+
+    const sendRegister = () => {
+        socket.send(
+            JSON.stringify({
+                action: "onchat",
+                data: {
+                    event: "REGISTER",
+                    data: {
+                        user: username,
+                        pass: password
+                    }
+                }
+            })
+        );
+    };
+
+    if (socket.readyState === WebSocket.OPEN) {
+        sendRegister();
+    } else {
+        socket.addEventListener("open", sendRegister, { once: true });
+    }
+}
+
 export function loginApi(username: string, password: string) {
     const socket = getSocket();
     if (!socket) {
@@ -67,3 +97,4 @@ export function logoutApi() {
         socket.addEventListener("open", sendLogout, { once: true });
     }
 }
+
