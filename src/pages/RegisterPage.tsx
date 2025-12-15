@@ -1,23 +1,25 @@
 // RegisterPage.tsx
 import { useState } from "react";
 import "../styles/RegisterPage.css";
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { registerApi } from "../services/authService";
 
 const RegisterPage = () => {
     const [username, setUsername] = useState("");
-    const [email, setEmail] = useState("");
+    // const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        console.log({
-            username,
-            email,
-            password
-        });
-
+        if (!username || !password) {
+            alert("Vui lòng nhập đầy đủ thông tin");
+            return;
+        }
+        registerApi(username, password);
         alert("Đăng ký thành công!");
+        navigate("/login");
     };
 
     return (
@@ -28,7 +30,7 @@ const RegisterPage = () => {
                     <p>Đăng ký để bắt đầu trò chuyện</p>
                 </div>
 
-                <div className="register-form">
+                <form className="register-form" onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label htmlFor="username">Tên đăng nhập</label>
                         <input
@@ -41,17 +43,17 @@ const RegisterPage = () => {
                         />
                     </div>
 
-                    <div className="form-group">
-                        <label htmlFor="email">Email</label>
-                        <input
-                            id="email"
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="example@email.com"
-                            autoComplete="email"
-                        />
-                    </div>
+                    {/*<div className="form-group">*/}
+                    {/*    <label htmlFor="email">Email</label>*/}
+                    {/*    <input*/}
+                    {/*        id="email"*/}
+                    {/*        type="email"*/}
+                    {/*        value={email}*/}
+                    {/*        onChange={(e) => setEmail(e.target.value)}*/}
+                    {/*        placeholder="example@email.com"*/}
+                    {/*        autoComplete="email"*/}
+                    {/*    />*/}
+                    {/*</div>*/}
 
                     <div className="form-group">
                         <label htmlFor="password">Mật khẩu</label>
@@ -65,10 +67,10 @@ const RegisterPage = () => {
                         />
                     </div>
 
-                    <button onClick={handleSubmit} className="btn-register">
+                    <button type="submit" className="btn-register">
                         Đăng ký
                     </button>
-                </div>
+                </form>
 
                 <div className="login-link">
                     <p>
