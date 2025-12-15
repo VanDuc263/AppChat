@@ -16,12 +16,12 @@ interface LoginResponse {
 }
 
 export function useAuthSocketListener() {
-    const socket: WebSocket | null = getSocket();
     const { user, setUser } = useAuth();
 
 
-
     useEffect(() => {
+        const socket = getSocket();
+
         if (!socket) return;
 
         const tryReLogin = () => {
@@ -50,6 +50,7 @@ export function useAuthSocketListener() {
         const listener = (ev: MessageEvent<string>) => {
             try {
                 const res: LoginResponse = JSON.parse(ev.data);
+                console.log(res)
                 if ((res.event === "LOGIN" || res.event === "RE_LOGIN") && res.status === "success") {
 
 
@@ -63,7 +64,7 @@ export function useAuthSocketListener() {
                     localStorage.setItem("re_login", code);
 
 
-                    getMessageApi("long",1)
+                    getMessageApi("22130050@st.hcmuaf.edu.vn",1)
 
                 }
 
@@ -81,5 +82,5 @@ export function useAuthSocketListener() {
         return () => {
             socket.removeEventListener("message", listener);
         };
-    }, [socket, setUser]);
+    }, [setUser]);
 }

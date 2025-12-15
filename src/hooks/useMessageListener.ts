@@ -16,9 +16,7 @@ export function useMessageListener() {
         if (!username) return;
 
         const handleMessage = (event: MessageEvent) => {
-            console.log(1)
             const data = JSON.parse(event.data);
-            console.log(data)
             if (data.event === "GET_PEOPLE_CHAT_MES" && data.status === "success") {
                 addMessages(data.data);
             }
@@ -34,5 +32,5 @@ export function useMessageListener() {
         return () => {
             socket.removeEventListener("message", handleMessage);
         };
-    }, []);
+    }, [addMessages]);
 }
