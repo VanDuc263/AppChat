@@ -7,6 +7,7 @@ const LoginPage: React.FC = () => {
     const { user, login } = useAuth();
     const [username, setUsername] = useState("");
     const [pass, setPass] = useState("");
+
     if (user) return <Navigate to="/chat" replace />;
     return (
         <div className="login-container">
