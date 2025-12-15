@@ -1,5 +1,5 @@
 import {createContext, useContext, useState, ReactNode, useEffect} from "react";
-import { connectSocket } from "../services/socket";
+import { connectSocket, disconnectSocket } from "../services/socket";
 import {loginApi,logoutApi,reLoginApi} from "../services/authService";
 
 interface User {
@@ -23,9 +23,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: AuthProviderProps) {
     const [user, setUser] = useState<User | null>(null);
-    connectSocket();
-
-
+    connectSocket()
 
 
     const login = (username: string, password: string) => {
@@ -35,6 +33,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     const logout = () => {
         logoutApi()
+
+        disconnectSocket()
+
         setUser(null)
         localStorage.removeItem("username");
         localStorage.removeItem("re_login");

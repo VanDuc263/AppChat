@@ -1,6 +1,7 @@
 // RegisterPage.tsx
 import { useState } from "react";
-import "../RegisterPage.css";
+import "../styles/RegisterPage.css";
+import { Link } from "react-router-dom"
 
 const RegisterPage = () => {
     const [username, setUsername] = useState("");
@@ -72,7 +73,7 @@ const RegisterPage = () => {
                 <div className="login-link">
                     <p>
                         Đã có tài khoản?{" "}
-                        <a href="/login">Đăng nhập ngay</a>
+                        <Link to="/login">Đăng nhập ngay</Link>
                     </p>
                 </div>
             </div>

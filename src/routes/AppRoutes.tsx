@@ -12,7 +12,7 @@ import React from "react";
 //     return user ? children : <Navigate to="/login" replace />;
 // }
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { user } = useAuth();
+    const { user,logout } = useAuth();
     return user ? <>{children}</> : <Navigate to="/login" replace />;
 };
 
@@ -27,9 +27,7 @@ export default function AppRoutes(){
                     path="/chat"
                     element={
                         <ProtectedRoute>
-                            <MessageProvider>
                                 <ChatPage/>
-                            </MessageProvider>
                         </ProtectedRoute>
                     }
                 />

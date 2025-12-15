@@ -2,10 +2,10 @@ import { useEffect } from "react";
 import { getSocket } from "../services/socket";
 import { useMessage } from "../contexts/MessageContext";
 import { useAuth } from "../contexts/AuthContext";
-import {getMessageApi} from "../services/chatService";
+import {getMessageApi, sendMessageApi} from "../services/chatService";
 
 export function useMessageListener() {
-    const { setUser } = useAuth()
+    const { user,setUser } = useAuth()
     const { addMessage, addMessages } = useMessage();
 
     useEffect(() => {
@@ -15,25 +15,22 @@ export function useMessageListener() {
         const username = localStorage.getItem("username");
         if (!username) return;
 
-        getMessageApi("long",1)
-
         const handleMessage = (event: MessageEvent) => {
             const data = JSON.parse(event.data);
-            console.log(data)
-            if (data.type === "GET_PEOPLE_CHAT_MES" && data.messages) {
-
-                addMessages(data.messages);
+            if (data.event === "GET_PEOPLE_CHAT_MES" && data.status === "success") {
+                addMessages(data.data);
             }
 
-            if (data.type === "NEW_MESSAGE" && data.message) {
-                addMessage(data.message);
+            if (data.event === "NEW_MESSAGE" && data.status === "success") {
+                addMessage(data.data);
             }
         };
+
 
         socket.addEventListener("message", handleMessage);
 
         return () => {
             socket.removeEventListener("message", handleMessage);
         };
-    }, [setUser]);
+    }, [addMessages]);
 }

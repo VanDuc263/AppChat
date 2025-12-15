@@ -1,8 +1,10 @@
 import { useEffect } from "react";
 import { getSocket } from "../services/socket";
 import { useAuth } from "../contexts/AuthContext";
-import {reLoginApi} from "../services/authService";
-import {getMessageApi} from "../services/chatService";
+import {reLoginApi,loginApi} from "../services/authService";
+import {sendMessageApi,getMessageApi} from "../services/chatService";
+
+
 
 interface LoginResponse {
     event: string;
@@ -14,10 +16,12 @@ interface LoginResponse {
 }
 
 export function useAuthSocketListener() {
-    const socket: WebSocket | null = getSocket();
     const { user, setUser } = useAuth();
 
+
     useEffect(() => {
+        const socket = getSocket();
+
         if (!socket) return;
 
         const tryReLogin = () => {
@@ -40,9 +44,13 @@ export function useAuthSocketListener() {
 
         tryReLogin();
 
+
+
+
         const listener = (ev: MessageEvent<string>) => {
             try {
                 const res: LoginResponse = JSON.parse(ev.data);
+                console.log(res)
                 if ((res.event === "LOGIN" || res.event === "RE_LOGIN") && res.status === "success") {
 
 
@@ -55,6 +63,8 @@ export function useAuthSocketListener() {
                     }));
                     localStorage.setItem("re_login", code);
 
+
+                    getMessageApi("22130050@st.hcmuaf.edu.vn",1)
 
                 }
 
@@ -72,5 +82,5 @@ export function useAuthSocketListener() {
         return () => {
             socket.removeEventListener("message", listener);
         };
-    }, [socket, setUser]);
+    }, [setUser]);
 }

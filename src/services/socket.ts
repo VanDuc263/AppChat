@@ -1,21 +1,35 @@
 let socket: WebSocket | null = null;
 
-export function connectSocket(): WebSocket {
-    if (!socket) {
-        socket = new WebSocket("wss://chat.longapp.site/chat/chat");
-
-        // Tùy chọn: log đơn giản
-        socket.onopen = () => console.log("WebSocket connected");
-        socket.onclose = () => {
-            console.log("WebSocket closed");
-            socket = null; 
-        };
-        socket.onerror = (e) => console.error("WebSocket error:", e);
+export function connectSocket() {
+    if (socket && socket.readyState !== WebSocket.CLOSED) {
+        return socket;
     }
+
+    socket = new WebSocket("wss://chat.longapp.site/chat/chat");
+
+    socket.onopen = () => {
+        console.log("WebSocket connected");
+    };
+
+    socket.onclose = () => {
+        console.log("WebSocket closed");
+        socket = null; // ⭐ rất quan trọng
+    };
+
+    socket.onerror = (e) => {
+        console.error("WebSocket error", e);
+    };
 
     return socket;
 }
 
-export function getSocket(): WebSocket | null {
+export function disconnectSocket() {
+    if (socket) {
+        socket.close();
+        socket = null;
+    }
+}
+
+export function getSocket() {
     return socket;
 }

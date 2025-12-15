@@ -1,7 +1,7 @@
 import { useAuth } from "../contexts/AuthContext";
 import { useState } from "react";
-import { Navigate } from "react-router-dom";
-import "../LoginPage.css";
+import {Link, Navigate} from "react-router-dom";
+import "../styles/LoginPage.css";
 
 const LoginPage: React.FC = () => {
     const { user, login } = useAuth();
@@ -12,6 +12,7 @@ const LoginPage: React.FC = () => {
     return (
         <div className="login-container">
             <div className="login-card">
+
                 <div className="login-header">
                     <h1>Welcome Back</h1>
                     <p>Please login to your account</p>
@@ -50,6 +51,12 @@ const LoginPage: React.FC = () => {
                         Login
                     </button>
                 </form>
+                <div className="login-link">
+                    <p>
+                        Chưa có tài khoản {" "}
+                        <Link to="/register">Đăng ký ngay</Link>
+                    </p>
+                </div>
             </div>
         </div>
     );
