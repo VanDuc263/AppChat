@@ -1,26 +1,45 @@
 import { useMessage } from "../../contexts/MessageContext";
 import { useAuth } from "../../contexts/AuthContext";
+import "./MessageList.css";
 
 export default function MessageList() {
     const { messages } = useMessage();
     const { user } = useAuth();
 
-    return (
-        <div>
-            <h1>hi</h1>
+    const groupedMessages = [];
+    messages.forEach((msg) => {
+        const lastGroup = groupedMessages[groupedMessages.length - 1];
 
-            {messages.map((msg) => {
-                const isMe = user?.username === msg.name;
+        if (lastGroup && lastGroup.name === msg.name) {
+            lastGroup.messages.push(msg.mes);
+        } else {
+            groupedMessages.push({
+                id: msg.id,
+                name: msg.name,
+                messages: [msg.mes],
+            });
+        }
+    });
+
+    return (
+        <div className="messages">
+            {groupedMessages.map((group) => {
+                const isMe = user?.username === group.name;
 
                 return (
                     <div
-                        key={msg.id}
-                        style={{
-                            textAlign: isMe ? "right" : "left",
-                            marginBottom: "8px",
-                        }}
+                        key={group.id}
+                        className={`message-group ${isMe ? "me" : "other"}`}
                     >
-                        <b>{isMe ? "Bạn" : msg.name}:</b> {msg.mes}
+                        <div className="sender">
+                            {isMe ? "Bạn" : group.name}
+                        </div>
+
+                        {group.messages.map((text, index) => (
+                            <div key={index} className="message-bubble">
+                                {text}
+                            </div>
+                        ))}
                     </div>
                 );
             })}

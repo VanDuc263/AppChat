@@ -1,0 +1,16 @@
+:root{
+    --white-color : white;
+    --green-color : green;
+    --red-color : red;
+    --boder-color : #a0aec0;
+}
+html{
+    font-family: Arial,sans-serif;
+    box-sizing: border-box;
+    font-size : 62.5%;
+    margin: 0;
+}
+.grid{
+    max-width: 1200px;
+    margin: 0 auto;
+}

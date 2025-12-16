@@ -1,0 +1,27 @@
+.header{
+    width: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+}
+
+.header-content{
+    height : 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.header-left__title{
+    font-size: 2rem;
+    font-weight: bold;
+    color : var(--white-color);
+
+}
+.header__logout-btn{
+    background-color: transparent;
+    border: none;
+    font-size: 1.6rem;
+    color: darkred;
+    font-weight: bold;
+}
+.header__logout-btn:hover{
+    cursor: pointer;
+}
