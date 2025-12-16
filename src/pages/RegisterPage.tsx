@@ -6,8 +6,9 @@ import { registerApi } from "../services/authService";
 
 const RegisterPage = () => {
     const [username, setUsername] = useState("");
-    // const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+
     const navigate = useNavigate();
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -17,9 +18,19 @@ const RegisterPage = () => {
             alert("Vui lòng nhập đầy đủ thông tin");
             return;
         }
-        registerApi(username, password);
-        alert("Đăng ký thành công!");
-        navigate("/login");
+
+        setLoading(true);
+
+        registerApi(username, password, (success, message) => {
+            setLoading(false);
+
+            if (success) {
+                alert("Đăng ký thành công");
+                navigate("/login");
+            } else {
+                alert(message || "Đăng ký thất bại");
+            }
+        });
     };
 
     return (
