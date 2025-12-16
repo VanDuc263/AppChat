@@ -1,0 +1,99 @@
+.container{
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+h1{
+    margin: 0;
+}
+.sidebar{
+    width: 25%;
+    border: 1px solid var(--boder-color);
+    height: calc(100vh - 60px - 30px);
+}
+.sidebar__head{
+    padding: 10px;
+}
+.sidebar__title{
+    font-size: 1rem;
+}
+.sidebar__search-inp{
+    background-color: #f5f5f5;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    height : 20px;
+    padding : 5px;
+    min-width: 250px;
+    margin-top : 10px;
+}
+.sidebar__bottom{
+}
+
+.content{
+    width: 75%;
+}
+.conversations{
+    margin-top: 40px;
+}
+
+.content{
+    border: 1px solid var(--boder-color);
+    display: flex;
+    flex-direction: column;
+}
+.content-head{
+    padding : 15px 10px 20px;
+    border-bottom: 1px solid var(--boder-color);
+}
+.content-bottom{
+    width: 100%;
+    height: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-top: 1px solid var(--boder-color);
+}
+.bottom-toolbar{
+    flex: 1;
+    width: 100%;
+    border-bottom: 1px solid #ccc;
+}
+.send-mes-inp{
+    box-sizing: border-box;
+    flex: 1;
+    width: 100%;
+    padding-left: 10px;
+    border: none;
+    outline: none;
+}
+.bottom-toolbar{
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    padding-left: 20px;
+}
+.toolbar-icon{
+    color : #7e7e7e;
+    font-size: 2.2rem;
+    margin: 0 5px;
+}
+.bottom__message{
+    flex: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+.send-mes-btn{
+    border: none;
+    background-color: transparent;
+    padding-right: 10px;
+}
+.send__mes-icon{
+    font-size: 1.6rem;
+    color : blue;
+}
+.send__mes-icon:hover{
+    cursor: pointer;
+}

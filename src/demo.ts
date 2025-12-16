@@ -1,7 +1,7 @@
 const WS_URL = "wss://chat.longapp.site/chat/chat";
-const username = "22130030@st.hcmuaf.edu.vn";
-const password = "ducvan263";
-const targetUser = "22130081@st.hcmuaf.edu.vn";
+const username = "22130081@st.hcmuaf.edu.vn";
+const password = "minhhieu";
+const targetUser = "22130030@st.hcmuaf.edu.vn";
 const page = 1;
 
 let ws: WebSocket | null = null;
@@ -51,12 +51,19 @@ function getMessages(targetUser: string, page: number) {
             //         mes : "test ---"
             //     }
             // }
+            // action: "onchat",
+            // data: {
+            //     event: "GET_PEOPLE_CHAT_MES",
+            //     data: {
+            //         name: targetUser,
+            //         page: page
+            //     }
+            // }
             action: "onchat",
             data: {
-                event: "GET_PEOPLE_CHAT_MES",
+                event: "CHECK_USER",
                 data: {
-                    name: targetUser,
-                    page: page
+                    "user": "22130030@st.hcmuaf.edu.vn"
                 }
             }
         //     action: "onchat",
