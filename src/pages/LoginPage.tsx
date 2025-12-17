@@ -1,6 +1,6 @@
 import { useAuth } from "../contexts/AuthContext";
 import { useState } from "react";
-import {Link, Navigate} from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import "../styles/LoginPage.css";
 
 const LoginPage: React.FC = () => {
@@ -9,36 +9,36 @@ const LoginPage: React.FC = () => {
     const [pass, setPass] = useState("");
 
     if (user) return <Navigate to="/chat" replace />;
+
     return (
         <div className="login-container">
             <div className="login-card">
-
                 <div className="login-header">
-                    <h1>Welcome Back</h1>
-                    <p>Please login to your account</p>
+                    <h1>Chào mừng trở lại!</h1>
+                    <p>Vui lòng đăng nhập vào tài khoản của bạn</p>
                 </div>
 
                 <form className="login-form" onSubmit={(e) => e.preventDefault()}>
                     <div className="input-group">
-                        <label htmlFor="username">Username</label>
+                        <label htmlFor="username">Tên đăng nhập</label>
                         <input
                             id="username"
                             type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
-                            placeholder="Enter your username"
+                            placeholder="Nhập tên đăng nhập"
                             autoComplete="username"
                         />
                     </div>
 
                     <div className="input-group">
-                        <label htmlFor="password">Password</label>
+                        <label htmlFor="password">Mật khẩu</label>
                         <input
                             id="password"
                             type="password"
                             value={pass}
                             onChange={(e) => setPass(e.target.value)}
-                            placeholder="Enter your password"
+                            placeholder="Nhập mật khẩu"
                             autoComplete="current-password"
                         />
                     </div>
@@ -48,12 +48,13 @@ const LoginPage: React.FC = () => {
                         className="login-button"
                         onClick={() => login(username, pass)}
                     >
-                        Login
+                        Đăng nhập
                     </button>
                 </form>
+
                 <div className="login-link">
                     <p>
-                        Chưa có tài khoản {" "}
+                        Chưa có tài khoản?{" "}
                         <Link to="/register">Đăng ký ngay</Link>
                     </p>
                 </div>
