@@ -89,10 +89,10 @@
 
 
 .content-bottom {
-    background: rgba(255, 255, 255, 0.92); /* Nền trắng đục nhẹ để nổi bật */
+    background: rgba(255, 255, 255, 0.92);
     border-top: 1px solid rgba(0, 0, 0, 0.08);
     padding: 16px 20px 24px;
-    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.12); /* Bóng trên để phân cách rõ với nền chat */
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.12);
 }
 
 
@@ -125,10 +125,10 @@
     align-items: center;
     gap: 16px;
     background-color: #ffffff;
-    border: 1px solid #e0e0e0; /* Viền nhẹ để phân biệt rõ hơn */
+    border: 1px solid #e0e0e0;
     border-radius: 30px;
     padding: 5px 20px;
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15); /* Bóng đậm hơn để nổi hẳn */
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15); 
     transition: all 0.3s ease;
 }
 
