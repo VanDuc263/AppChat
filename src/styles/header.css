@@ -1,27 +1,60 @@
-.header{
-    width: 100%;
+.header {
+    height: 70px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    flex-shrink: 0;
 }
 
-.header-content{
-    height : 60px;
+
+.header-content {
+    height: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0 32px;
 }
-.header-left__title{
-    font-size: 2rem;
-    font-weight: bold;
-    color : var(--white-color);
 
+
+.header__left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
 }
-.header__logout-btn{
-    background-color: transparent;
-    border: none;
-    font-size: 1.6rem;
-    color: darkred;
-    font-weight: bold;
+
+
+.header-logo {
+    font-size: 3rem;
+    color: white;
 }
-.header__logout-btn:hover{
+
+
+.header-title {
+    font-size: 2.8rem;
+    font-weight: 800;
+    color: white;
+    letter-spacing: 1px;
+}
+
+
+.header__logout-btn {
+    background: rgba(255, 255, 255, 0.25);
+    border: 1.5px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 600;
+    padding: 10px 28px;
+    border-radius: 50px;
     cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(12px);
 }
+
+
+.header__logout-btn:hover {
+    background: rgba(255, 255, 255, 0.35);
+    transform: translateY(-2px);
+}
+
