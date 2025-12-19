@@ -24,6 +24,19 @@ export function useMessageListener() {
             if (data.event === "NEW_MESSAGE" && data.status === "success") {
                 addMessage(data.data);
             }
+            /* ===== TẠO NHÓM CHAT ===== */
+            if (data.event === "CREATE_ROOM") {
+                if (data.status === "success") {
+                    // phát event để ChatPage / Sidebar cập nhật UI
+                    window.dispatchEvent(
+                        new CustomEvent("CREATE_ROOM_SUCCESS", {
+                            detail: data.data,
+                        })
+                    );
+                } else {
+                    alert(data.message || "Tạo nhóm thất bại");
+                }
+            }
         };
 
 

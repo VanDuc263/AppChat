@@ -9,6 +9,7 @@ import ConversationItem from "../components/conversations/ConversationItem";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import {faIcons, faImage, faPaperPlane,faPlus} from "@fortawesome/free-solid-svg-icons";
+import { createRoomApi } from "../services/chatService";
 
 function ChatAppContent() {
     const {user} = useAuth();
@@ -22,6 +23,7 @@ function ChatAppContent() {
             alert("Vui lòng nhập tên nhóm");
             return;
         }
+        createRoomApi(roomName);
         setRoomName("");
         setShowCreateRoom(false);
     };
