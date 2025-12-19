@@ -4,8 +4,6 @@ import { useAuth } from "../contexts/AuthContext";
 import {reLoginApi,loginApi} from "../services/authService";
 import {sendMessageApi,getMessageApi} from "../services/chatService";
 
-
-
 interface LoginResponse {
     event: string;
     status: "success" | "error";
@@ -13,6 +11,11 @@ interface LoginResponse {
         RE_LOGIN_CODE: string;
         [key: string]: any;
     };
+}
+interface RegisterResponse {
+    event: string;
+    status: "success" | "error";
+    data?: any;
 }
 
 export function useAuthSocketListener() {
@@ -46,7 +49,7 @@ export function useAuthSocketListener() {
 
 
 
-
+        /* ================= LOGIN / RE_LOGIN ================= */
         const listener = (ev: MessageEvent<string>) => {
             try {
                 const res: LoginResponse = JSON.parse(ev.data);
@@ -76,11 +79,28 @@ export function useAuthSocketListener() {
                 console.error("Invalid JSON from WebSocket:", e);
             }
         };
+        /* ================= REGISTER ================= */
+        const registerListener = (ev: MessageEvent<string>) => {
+            try {
+                const res: RegisterResponse = JSON.parse(ev.data);
+
+                if (res.event !== "REGISTER") return;
+
+                window.dispatchEvent(
+                    new CustomEvent("REGISTER_RESULT", {
+                        detail: res
+                    })
+                );
+            } catch {}
+        };
 
         socket.addEventListener("message", listener);
+        socket.addEventListener("message", registerListener);
+
 
         return () => {
             socket.removeEventListener("message", listener);
+            socket.removeEventListener("message", registerListener);
         };
     }, [setUser]);
 }
