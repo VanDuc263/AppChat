@@ -7,11 +7,24 @@ import Header from "../components/Header";
 import "../styles/base.css";
 import ConversationItem from "../components/conversations/ConversationItem";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faIcons, faImage, faPaperPlane} from "@fortawesome/free-solid-svg-icons";
+import { useState } from "react";
+import {faIcons, faImage, faPaperPlane,faPlus} from "@fortawesome/free-solid-svg-icons";
 
 function ChatAppContent() {
     const {user} = useAuth();
     useMessageListener();
+    /* ===== CREATE ROOM STATE ===== */
+    const [showCreateRoom, setShowCreateRoom] = useState(false);
+    const [roomName, setRoomName] = useState("");
+
+    const handleCreateRoom = () => {
+        if (!roomName.trim()) {
+            alert("Vui lòng nhập tên nhóm");
+            return;
+        }
+        setRoomName("");
+        setShowCreateRoom(false);
+    };
     return (
         <div className="app">
             <Header/>
@@ -29,6 +42,15 @@ function ChatAppContent() {
                                     type="text"
                                     placeholder="Tìm kiếm"
                                 />
+                                <div className="create-room-wrap">
+                                    <button
+                                        className="create-room-btn"
+                                        onClick={() => setShowCreateRoom(true)}
+                                    >
+                                        <FontAwesomeIcon icon={faPlus}/>
+                                    </button>
+                                    <span className="create-room-text">Tạo nhóm</span>
+                                </div>
                             </div>
                         </div>
                         <div className="sidebar__bottom">
@@ -67,6 +89,31 @@ function ChatAppContent() {
                     </div>
                 </div>
             </div>
+            {/* ========== CREATE ROOM MODAL ========== */}
+            {showCreateRoom && (
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <h3>Tạo nhóm chat</h3>
+                        <input
+                            type="text"
+                            placeholder="Nhập tên nhóm..."
+                            value={roomName}
+                            onChange={(e) => setRoomName(e.target.value)}
+                        />
+                        <div className="modal-actions">
+                            <button onClick={() => setShowCreateRoom(false)}>
+                                Hủy
+                            </button>
+                            <button
+                                className="primary"
+                                onClick={handleCreateRoom}
+                            >
+                                Tạo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
