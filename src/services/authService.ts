@@ -1,38 +1,12 @@
 import { getSocket } from "./socket";
 
-export function registerApi(
-    username: string,
-    password: string,
-    callback: (success: boolean, message?: string) => void
-) {
+export function registerApi(username: string, password: string) {
     const socket = getSocket();
 
     if (!socket) {
-        callback(false, "WebSocket chưa sẵn sàng");
+        console.error("WebSocket chưa sẵn sàng. Hãy gọi connectSocket trước.");
         return;
     }
-
-    const handleMessage = (event: MessageEvent) => {
-        try {
-            const msg = JSON.parse(event.data);
-
-            console.log("REGISTER RESPONSE:", msg);
-
-            if (msg.event === "REGISTER") {
-                socket.removeEventListener("message", handleMessage);
-
-                if (msg.status === "success") {
-                    callback(true, msg.data);
-                } else {
-                    callback(false, msg.data || "Đăng ký thất bại");
-                }
-            }
-        } catch (e) {
-            console.error("Parse error", e);
-        }
-    };
-
-    socket.addEventListener("message", handleMessage);
 
     const sendRegister = () => {
         socket.send(

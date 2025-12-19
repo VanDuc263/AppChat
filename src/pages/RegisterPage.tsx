@@ -1,5 +1,5 @@
 // RegisterPage.tsx
-import { useState } from "react";
+import { useEffect,useState } from "react";
 import "../styles/RegisterPage.css";
 import { Link, useNavigate } from "react-router-dom"
 import { registerApi } from "../services/authService";
@@ -11,6 +11,22 @@ const RegisterPage = () => {
 
     const navigate = useNavigate();
 
+    useEffect(() => {
+        const handler = (e: any) => {
+            setLoading(false);
+
+            if (e.detail.status === "success") {
+                alert("Đăng ký thành công ");
+                navigate("/login");
+            } else {
+                alert(e.detail.data || "Đăng ký thất bại");
+            }
+        };
+
+        window.addEventListener("REGISTER_RESULT", handler);
+        return () => window.removeEventListener("REGISTER_RESULT", handler);
+    }, [navigate]);
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -20,18 +36,9 @@ const RegisterPage = () => {
         }
 
         setLoading(true);
-
-        registerApi(username, password, (success, message) => {
-            setLoading(false);
-
-            if (success) {
-                alert("Đăng ký thành công");
-                navigate("/login");
-            } else {
-                alert(message || "Đăng ký thất bại");
-            }
-        });
+        registerApi(username, password);
     };
+
 
     return (
         <div className="register-container">
