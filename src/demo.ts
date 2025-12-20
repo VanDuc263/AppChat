@@ -6,7 +6,7 @@ const page = 1;
 
 let ws: WebSocket | null = null;
 
-function connectSocket(): WebSocket {
+export function connectSocket(): WebSocket {
     if (!ws) {
         ws = new WebSocket(WS_URL);
 
@@ -59,17 +59,17 @@ function getMessages(targetUser: string, page: number) {
             //         page: page
             //     }
             // }
+            // action: "onchat",
+            // data: {
+            //     event: "CHECK_USER",
+            //     data: {
+            //         "user": "22130030@st.hcmuaf.edu.vn"
+            //     }
+            // }
             action: "onchat",
             data: {
-                event: "CHECK_USER",
-                data: {
-                    "user": "22130030@st.hcmuaf.edu.vn"
-                }
+                event: "GET_USER_LIST"
             }
-        //     action: "onchat",
-        //     data: {
-        //         event: "GET_USER_LIST"
-        //     }
         }));
     };
 

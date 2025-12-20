@@ -43,6 +43,7 @@ function ChatAppContent() {
                             <MessageList />
                             <div className="content-bottom">
                                 <div className="bottom-toolbar">
+
                                     <FontAwesomeIcon className="toolbar-icon" icon={faIcons} />
                                     <FontAwesomeIcon className="toolbar-icon" icon={faImage} />
                                 </div>
