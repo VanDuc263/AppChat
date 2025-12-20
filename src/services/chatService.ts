@@ -53,3 +53,26 @@ export function getMessageApi(targetUser : string,page : number){
 
 
 }
+export function createRoomApi(name: string) {
+    const socket = getSocket();
+    if (!socket) {
+        console.error("WebSocket chưa sẵn sàng");
+        return;
+    }
+
+    const send = () => {
+        socket.send(JSON.stringify({
+            action: "onchat",
+            data: {
+                event: "CREATE_ROOM",
+                data: { name }
+            }
+        }));
+    };
+
+    if (socket.readyState === WebSocket.OPEN) {
+        send();
+    } else {
+        socket.addEventListener("open", send, { once: true });
+    }
+}
