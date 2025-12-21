@@ -37,7 +37,7 @@ const MessageContext = createContext<MessageContextType | null>(null);
 export function MessageProvider({ children }: { children: ReactNode }) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [conversations,setConversations] = useState<Conversation[]>([])
-    const [page,setPage] = useState<number>(1)
+    const [page,setPage] = useState<number>(2)
     const [currentConversation,setCurrentConversation] = useState<string | null>(null)
 
     const sendMessage = (to: string, text: string) => {
@@ -70,7 +70,7 @@ export function MessageProvider({ children }: { children: ReactNode }) {
         try{
             const p = pageParam ?? page
             setCurrentConversation(name);
-            setPage(p)
+            setPage(2)
             setMessages([])
             getMessageApi(name,p)
 

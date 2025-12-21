@@ -6,7 +6,8 @@ import {faCircle} from "@fortawesome/free-solid-svg-icons";
 
 interface ConversationItemProps {
     name?: string;
-    type : number
+    type : number;
+    actionTime : string;
     status?: string;
     avatar?: string;
     isActive?: boolean;
@@ -14,9 +15,11 @@ interface ConversationItemProps {
     onClick?: () => void;
 }
 
+
 export default function ConversationItem({
                                              name = "VanDuc",
                                             type,
+                                            actionTime,
                                              status = "Hoạt động 3 phút trước",
                                              avatar = logo,
                                              isActive = false,
@@ -24,7 +27,32 @@ export default function ConversationItem({
                                              onClick
                                          }: ConversationItemProps) {
     const isOnline = status.includes("Hoạt động") || status.includes("online");
+    const convertTime = (timeStr: string) => {
+        if (!timeStr) return "";
 
+        // "2025-12-21 08:37:20" → Date
+        const time = new Date(timeStr.replace(" ", "T"));
+        const now = new Date();
+
+        const diffMs = now.getTime() - time.getTime();
+        const diffMinutes = Math.floor(diffMs / (1000 * 60));
+        const diffHours = Math.floor(diffMinutes / 60);
+        const diffDays = Math.floor(diffHours / 24);
+
+        if (diffMinutes < 1) return "Vừa xong";
+        if (diffMinutes < 60) return `${diffMinutes} phút trước`;
+        if (diffHours < 24) return `${diffHours} giờ trước`;
+        if (diffDays < 7) return `${diffDays} ngày trước`;
+
+        const diffWeeks = Math.floor(diffDays / 7);
+        if (diffWeeks < 4) return `${diffWeeks} tuần trước`;
+
+        const diffMonths = Math.floor(diffDays / 30);
+        if (diffMonths < 12) return `${diffMonths} tháng trước`;
+
+        const diffYears = Math.floor(diffDays / 365);
+        return `${diffYears} năm trước`;
+    };
 
     return (
         <div
@@ -41,17 +69,16 @@ export default function ConversationItem({
                     src={avatar}
                     alt={`Avatar của ${name}`}
                 />
-                {isOnline && <FontAwesomeIcon icon={faCircle} className="online-indicator"/>}
             </div>
 
 
             <div className="conversation-detail">
                 <div className="conversation-name">{name}</div>
                 <div className="conversation-status">
-                    {isOnline && <FontAwesomeIcon icon={faCircle} className="status-dot"/>}
-                    {status}
+                    {convertTime(actionTime)}
                 </div>
             </div>
+
 
 
             {isUnread && <div className="unread-badge"></div>}
