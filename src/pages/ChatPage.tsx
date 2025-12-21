@@ -8,9 +8,10 @@ import "../styles/base.css";
 import ConversationItem from "../components/conversations/ConversationItem";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
-import {faIcons, faImage, faPaperPlane,faPlus} from "@fortawesome/free-solid-svg-icons";
+import {faIcons, faImage, faPaperPlane,faPlus,faCircle} from "@fortawesome/free-solid-svg-icons";
 import { createRoomApi } from "../services/chatService";
 import {useMessage} from "../contexts/MessageContext";
+import MessageInput from "../components/buttons/MessageInput";
 
 interface Room {
     id: number;
@@ -101,7 +102,7 @@ function ChatAppContent() {
 
 
                                 {conversations.map((conversation) => (
-                                    <ConversationItem onClick={() =>selectConversation(conversation.name,1)} name={conversation.name} type={conversation.type} isActive={true}/>
+                                    <ConversationItem onClick={() =>selectConversation(conversation.name,1)} name={conversation.name} actionTime={conversation.actionTime} type={conversation.type} isActive={true}/>
 
                                 ))}
 
@@ -112,7 +113,11 @@ function ChatAppContent() {
 
                     {/* Content Area */}
                     <div className="content">
-                        <div className="content-head">{currentConversation}</div>
+                        <div className="content-head">
+                            <span>{currentConversation}</span>
+
+                        { <FontAwesomeIcon icon={faCircle} className="user-status"/>}
+                        </div>
 
 
                         <MessageList/>
@@ -120,7 +125,8 @@ function ChatAppContent() {
 
                         <div className="content-bottom">
                             <div className="bottom-toolbar">
-                                <FontAwesomeIcon className="toolbar-icon" icon={faImage}/>
+
+                                <FontAwesomeIcon onClick={() => MessageInput} className="toolbar-icon" icon={faImage}/>
                                 <FontAwesomeIcon className="toolbar-icon" icon={faIcons}/>
                             </div>
                             <div className="bottom__message">
