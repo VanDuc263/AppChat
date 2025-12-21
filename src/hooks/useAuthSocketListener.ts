@@ -2,9 +2,7 @@ import { useEffect } from "react";
 import { getSocket } from "../services/socket";
 import { useAuth } from "../contexts/AuthContext";
 import {reLoginApi,loginApi} from "../services/authService";
-import {sendMessageApi,getMessageApi} from "../services/chatService";
-
-
+import {sendMessageApi,getMessageApi,getConversationApi} from "../services/chatService";
 
 interface LoginResponse {
     event: string;
@@ -14,6 +12,11 @@ interface LoginResponse {
         [key: string]: any;
     };
 }
+interface RegisterResponse {
+    event: string;
+    status: "success" | "error";
+    data?: any;
+}
 
 export function useAuthSocketListener() {
     const { user, setUser } = useAuth();
@@ -21,7 +24,7 @@ export function useAuthSocketListener() {
 
     useEffect(() => {
         const socket = getSocket();
-
+        console.log(1)
         if (!socket) return;
 
         const tryReLogin = () => {
@@ -46,11 +49,10 @@ export function useAuthSocketListener() {
 
 
 
-
+        /* ================= LOGIN / RE_LOGIN ================= */
         const listener = (ev: MessageEvent<string>) => {
             try {
                 const res: LoginResponse = JSON.parse(ev.data);
-                console.log(res)
                 if ((res.event === "LOGIN" || res.event === "RE_LOGIN") && res.status === "success") {
 
 
@@ -65,7 +67,7 @@ export function useAuthSocketListener() {
 
 
                     getMessageApi("22130050@st.hcmuaf.edu.vn",1)
-
+                    getConversationApi();
                 }
 
                 if (res.event === "LOGIN" && res.status === "error") {
@@ -76,11 +78,28 @@ export function useAuthSocketListener() {
                 console.error("Invalid JSON from WebSocket:", e);
             }
         };
+        /* ================= REGISTER ================= */
+        const registerListener = (ev: MessageEvent<string>) => {
+            try {
+                const res: RegisterResponse = JSON.parse(ev.data);
+
+                if (res.event !== "REGISTER") return;
+
+                window.dispatchEvent(
+                    new CustomEvent("REGISTER_RESULT", {
+                        detail: res
+                    })
+                );
+            } catch {}
+        };
 
         socket.addEventListener("message", listener);
+        socket.addEventListener("message", registerListener);
+
 
         return () => {
             socket.removeEventListener("message", listener);
+            socket.removeEventListener("message", registerListener);
         };
     }, [setUser]);
 }

@@ -3,19 +3,30 @@ import {getSocket} from "./socket";
 export function sendMessageApi(toUser : string,mes : string){
     const socket = getSocket()
 
-    socket.send(JSON.stringify(
-        {
-            action : "onchat",
-            data : {
-                event : "SEND_CHAT",
-                data : {
-                    type : "people",
-                    to : toUser,
-                    mes : mes
+
+    if(!socket) return
+
+    console.log(mes)
+    const sendMessage = () => {
+        socket.send(JSON.stringify(
+            {
+                action: "onchat",
+                data: {
+                    event: "SEND_CHAT",
+                    data: {
+                        type: "people",
+                        to: toUser,
+                        mes: mes
+                    }
                 }
             }
-        }
-    ))
+        ))
+    }
+    if (socket.readyState === WebSocket.OPEN) {
+        sendMessage();
+    } else {
+        socket.addEventListener("open", sendMessage, { once: true });
+    }
 }
 
 export function getMessageApi(targetUser : string,page : number){
@@ -52,4 +63,63 @@ export function getMessageApi(targetUser : string,page : number){
     }
 
 
+}
+
+export function getConversationApi(){
+    const socket = getSocket();
+
+
+    if (!socket) {
+        console.error("WebSocket chưa sẵn sàng. Hãy gọi connectSocket trước.");
+        return;
+    }
+
+    const sendGetConversation = () => {
+        socket.send(JSON.stringify({
+            // action: "onchat",
+            // data: {
+            //     event: "GET_PEOPLE_CHAT_MES",
+            //     data: {
+            //         name: targetUser,
+            //         page: page
+            //     }
+            // }
+            action: "onchat",
+            data: {
+                event: "GET_USER_LIST"
+            }
+        }));
+    };
+
+    if (socket.readyState === WebSocket.OPEN) {
+        sendGetConversation();
+    } else {
+        socket.addEventListener("open", sendGetConversation, { once: true });
+    }
+
+
+}
+
+export function createRoomApi(name: string) {
+    const socket = getSocket();
+    if (!socket) {
+        console.error("WebSocket chưa sẵn sàng");
+        return;
+    }
+
+    const send = () => {
+        socket.send(JSON.stringify({
+            action: "onchat",
+            data: {
+                event: "CREATE_ROOM",
+                data: { name }
+            }
+        }));
+    };
+
+    if (socket.readyState === WebSocket.OPEN) {
+        send();
+    } else {
+        socket.addEventListener("open", send, { once: true });
+    }
 }
