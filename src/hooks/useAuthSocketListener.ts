@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { getSocket } from "../services/socket";
 import { useAuth } from "../contexts/AuthContext";
 import {reLoginApi,loginApi} from "../services/authService";
-import {sendMessageApi,getMessageApi} from "../services/chatService";
+import {sendMessageApi,getMessageApi,getConversationApi} from "../services/chatService";
 
 interface LoginResponse {
     event: string;
@@ -24,7 +24,7 @@ export function useAuthSocketListener() {
 
     useEffect(() => {
         const socket = getSocket();
-
+        console.log(1)
         if (!socket) return;
 
         const tryReLogin = () => {
@@ -53,7 +53,6 @@ export function useAuthSocketListener() {
         const listener = (ev: MessageEvent<string>) => {
             try {
                 const res: LoginResponse = JSON.parse(ev.data);
-                console.log(res)
                 if ((res.event === "LOGIN" || res.event === "RE_LOGIN") && res.status === "success") {
 
 
@@ -68,7 +67,7 @@ export function useAuthSocketListener() {
 
 
                     getMessageApi("22130050@st.hcmuaf.edu.vn",1)
-
+                    getConversationApi();
                 }
 
                 if (res.event === "LOGIN" && res.status === "error") {

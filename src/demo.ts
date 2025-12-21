@@ -6,7 +6,7 @@ const page = 1;
 
 let ws: WebSocket | null = null;
 
-function connectSocket(): WebSocket {
+export function connectSocket(): WebSocket {
     if (!ws) {
         ws = new WebSocket(WS_URL);
 
@@ -41,16 +41,17 @@ function getMessages(targetUser: string, page: number) {
     const socket = connectSocket();
 
     const sendGetMessages = () => {
+        console.log(1)
         socket.send(JSON.stringify({
-            // action : "onchat",
-            // data : {
-            //     event : "SEND_CHAT",
-            //     data : {
-            //         type : "people",
-            //         to : "22130081@st.hcmuaf.edu.vn",
-            //         mes : "test ---"
-            //     }
-            // }
+            action : "onchat",
+            data : {
+                event : "SEND_CHAT",
+                data : {
+                    type : "people",
+                    to : "22131@st.hcmuaf.edu.vn",
+                    mes : "test --- hihihi"
+                }
+            }
             // action: "onchat",
             // data: {
             //     event: "GET_PEOPLE_CHAT_MES",
@@ -59,17 +60,17 @@ function getMessages(targetUser: string, page: number) {
             //         page: page
             //     }
             // }
-            action: "onchat",
-            data: {
-                event: "CHECK_USER",
-                data: {
-                    "user": "22130030@st.hcmuaf.edu.vn"
-                }
-            }
-        //     action: "onchat",
-        //     data: {
-        //         event: "GET_USER_LIST"
-        //     }
+            // action: "onchat",
+            // data: {
+            //     event: "CHECK_USER",
+            //     data: {
+            //         "user": "22130030@st.hcmuaf.edu.vn"
+            //     }
+            // }
+            // action: "onchat",
+            // data: {
+            //     event: "GET_USER_LIST"
+            // }
         }));
     };
 

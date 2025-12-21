@@ -6,6 +6,7 @@ import {faCircle} from "@fortawesome/free-solid-svg-icons";
 
 interface ConversationItemProps {
     name?: string;
+    type : number
     status?: string;
     avatar?: string;
     isActive?: boolean;
@@ -15,6 +16,7 @@ interface ConversationItemProps {
 
 export default function ConversationItem({
                                              name = "VanDuc",
+                                            type,
                                              status = "Hoạt động 3 phút trước",
                                              avatar = logo,
                                              isActive = false,

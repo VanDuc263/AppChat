@@ -10,6 +10,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import {faIcons, faImage, faPaperPlane,faPlus} from "@fortawesome/free-solid-svg-icons";
 import { createRoomApi } from "../services/chatService";
+import {useMessage} from "../contexts/MessageContext";
 
 interface Room {
     id: number;
@@ -21,11 +22,13 @@ interface Room {
 
 function ChatAppContent() {
     const {user} = useAuth();
+    const [text, setText] = useState("");
+    const {sendMessage,currentConversation,selectConversation,conversations} = useMessage();
     useMessageListener();
     /* ===== CREATE ROOM STATE ===== */
     const [showCreateRoom, setShowCreateRoom] = useState(false);
     const [roomName, setRoomName] = useState("");
-    const [conversations, setConversations] = useState<Room[]>([]);
+    // const [conversations, setConversations] = useState<Room[]>([]);
 
     const handleCreateRoom = () => {
         if (!roomName.trim()) {
@@ -40,7 +43,7 @@ function ChatAppContent() {
     useEffect(() => {
         const handleCreateRoomSuccess = (e: any) => {
             const newRoom: Room = e.detail;
-            setConversations((prev) => [newRoom, ...prev]);
+            // setConversations((prev) => [newRoom, ...prev]);
         };
 
         window.addEventListener(
@@ -86,18 +89,22 @@ function ChatAppContent() {
                         <div className="sidebar__bottom">
                             <div className="conversations">
                                 {/* ===== RENDER CONVERSATIONS ===== */}
-                                {conversations.map((room) => (
-                                    <ConversationItem
-                                        key={room.id}
-                                        name={room.name}
-                                        isActive={false}
-                                        // isGroup={true}
-                                    />
+                                {/*{conversations.map((room) => (*/}
+                                {/*    <ConversationItem*/}
+                                {/*        key={room.id}*/}
+                                {/*        name={room.name}*/}
+                                {/*        isActive={false}*/}
+                                {/*        // isGroup={true}*/}
+                                {/*    />*/}
+                                {/*))}*/}
+
+
+
+                                {conversations.map((conversation) => (
+                                    <ConversationItem onClick={() =>selectConversation(conversation.name,1)} name={conversation.name} type={conversation.type} isActive={true}/>
+
                                 ))}
 
-                                {/* Demo cá nhân (có thể bỏ sau) */}
-                                <ConversationItem name="VanDuc" isActive={true}/>
-                                {/* Thêm các item khác ở đây */}
                             </div>
                         </div>
                     </div>
@@ -105,7 +112,7 @@ function ChatAppContent() {
 
                     {/* Content Area */}
                     <div className="content">
-                        <div className="content-head">VanDuc</div>
+                        <div className="content-head">{currentConversation}</div>
 
 
                         <MessageList/>
@@ -120,9 +127,20 @@ function ChatAppContent() {
                                 <input
                                     className="send-mes-inp"
                                     type="text"
+                                    value={text}
                                     placeholder="Nhập tin nhắn..."
+                                    onChange={(e) => setText(e.target.value)}
                                 />
-                                <button className="send-mes-btn">
+                                <button onClick={
+
+                                        () => {
+                                            if(!text.trim()) return
+                                            sendMessage(currentConversation, text)
+                                            setText("")
+                                        }
+                                    }
+
+                                        className="send-mes-btn">
                                     <FontAwesomeIcon className="send__mes-icon" icon={faPaperPlane}/>
                                 </button>
                             </div>

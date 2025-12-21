@@ -1,15 +1,27 @@
 import {useMessage} from "../../contexts/MessageContext";
 import {useAuth} from "../../contexts/AuthContext";
 import "./MessageList.css";
+import {useEffect, useRef} from "react";
 
 
 export default function MessageList() {
     const {messages} = useMessage();
     const {user} = useAuth();
 
+    const mesEndRef = useRef(null)
+
+    const sortedMes = [...messages].sort((a,b) => a.id - b.id)
+
+
+
+    const scrollToBottom = () => {
+        mesEndRef.current?.scrollIntoView({behavior : "smooth"})
+    }
+
+    useEffect(() => scrollToBottom,[messages])
 
     const groupedMessages = [];
-    messages.forEach((msg) => {
+    sortedMes.forEach((msg) => {
         const lastGroup = groupedMessages[groupedMessages.length - 1];
 
 
@@ -17,7 +29,7 @@ export default function MessageList() {
             lastGroup.messages.push(msg.mes);
         } else {
             groupedMessages.push({
-                id: msg.id,
+                id : msg.id,
                 name: msg.name,
                 messages: [msg.mes],
             });
@@ -49,6 +61,8 @@ export default function MessageList() {
                     </div>
                 );
             })}
+
+            <div ref={mesEndRef}></div>
         </div>
     );
 }

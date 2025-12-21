@@ -56,11 +56,11 @@ export function loginApi(username: string, password: string) {
 
 export function reLoginApi(username: string, code: string) {
     const socket = getSocket();
+    console.log(1)
     if (!socket) {
         console.error("WebSocket chưa sẵn sàng. Hãy gọi connectSocket trước.");
         return;
     }
-
     const sendReLogin = () => {
         socket.send(JSON.stringify({
             action: "onchat",
