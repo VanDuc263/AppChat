@@ -271,3 +271,57 @@
     border-radius: 50%;
     padding: 2px;
 }
+/* ===== remove inline styles in ChatPage.tsx ===== */
+.content-bottom {
+    position: relative;
+}
+
+.emoji-picker-popup {
+    position: absolute;
+    bottom: 65px;
+    left: 10px;
+    z-index: 9999;
+}
+
+.upload-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.upload-progress {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.toolbar-icon--disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* ===== upload confirm modal ===== */
+.upload-modal {
+    width: 420px;
+}
+
+.upload-preview {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.upload-preview img {
+    max-width: 100%;
+    max-height: 260px;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    object-fit: cover;
+}
+
+.upload-file-name {
+    font-size: 1.35rem;
+    color: #444;
+    margin-bottom: 14px;
+    word-break: break-word;
+}
