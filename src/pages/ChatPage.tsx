@@ -11,7 +11,6 @@ import { useEffect, useState } from "react";
 import {faIcons, faImage, faPaperPlane,faPlus,faCircle} from "@fortawesome/free-solid-svg-icons";
 import { createRoomApi } from "../services/chatService";
 import {useMessage} from "../contexts/MessageContext";
-import MessageInput from "../components/buttons/MessageInput";
 
 interface Room {
     id: number;
@@ -126,8 +125,8 @@ function ChatAppContent() {
                         <div className="content-bottom">
                             <div className="bottom-toolbar">
 
-                                <FontAwesomeIcon onClick={() => MessageInput} className="toolbar-icon" icon={faImage}/>
-                                <FontAwesomeIcon className="toolbar-icon" icon={faIcons}/>
+                                {/*<FontAwesomeIcon onClick={() => MessageInput} className="toolbar-icon" icon={faImage}/>*/}
+                                {/*<FontAwesomeIcon className="toolbar-icon" icon={faIcons}/>*/}
                             </div>
                             <div className="bottom__message">
                                 <input
