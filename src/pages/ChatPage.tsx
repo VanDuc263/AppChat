@@ -56,12 +56,51 @@ function ChatAppContent() {
     const IMAGE_PREFIX = "__IMG__:";
     const VIDEO_PREFIX = "__VID__:";
     const FILE_PREFIX  = "__FILE__:";
+    const STICKER_PREFIX = "__STK__:";
+    const RECENT_STICKER_KEY = "recent_stickers_v1";
 
     type PendingKind = "image" | "video" | "file";
     const getKind = (f: File): PendingKind => {
         if (f.type?.startsWith("image/")) return "image";
         if (f.type?.startsWith("video/")) return "video";
         return "file";
+    };
+    const [showSticker, setShowSticker] = useState(false);
+    const stickerWrapRef = useRef<HTMLDivElement | null>(null);
+    const [stickerTab, setStickerTab] = useState<"recent" | "all">("all");
+    const stickerCtx = (require as any).context("../stickers", false, /\.png$/i);
+    const ALL_STICKER_KEYS: string[] = stickerCtx.keys().sort();
+
+    const [recentStickerKeys, setRecentStickerKeys] = useState<string[]>(() => {
+        try {
+            const raw = localStorage.getItem(RECENT_STICKER_KEY);
+            const arr = raw ? JSON.parse(raw) : [];
+            return Array.isArray(arr) ? arr.filter((k) => ALL_STICKER_KEYS.includes(k)) : [];
+        } catch {
+            return [];
+        }
+    });
+
+    useEffect(() => {
+        try {
+            localStorage.setItem(RECENT_STICKER_KEY, JSON.stringify(recentStickerKeys));
+        } catch {}
+    }, [recentStickerKeys]);
+
+    useEffect(() => {
+        if (!showSticker) return;
+        const onDown = (e: MouseEvent) => {
+            if (!stickerWrapRef.current?.contains(e.target as Node)) setShowSticker(false);
+        };
+        document.addEventListener("mousedown", onDown);
+        return () => document.removeEventListener("mousedown", onDown);
+    }, [showSticker]);
+
+    const handleStickerClick = (key: string) => {
+        if (!currentConversation) return alert("Bạn hãy chọn 1 cuộc trò chuyện trước.");
+        setRecentStickerKeys((p) => [key, ...p.filter((k) => k !== key)].slice(0, 24));
+        sendMessage(currentConversation, `${STICKER_PREFIX}${key}`);
+        setShowSticker(false);
     };
 
     const [uploading, setUploading] = useState(false);
@@ -295,7 +334,45 @@ function ChatAppContent() {
                                     <EmojiPicker onEmojiClick={handleEmojiClick}/>
                                 </div>
                             )}
-
+                            {showSticker && (
+                                <div ref={stickerWrapRef} className="sticker-picker-popup">
+                                    <div className="sticker-tabs">
+                                        <button
+                                            type="button"
+                                            className={`sticker-tab ${stickerTab === "recent" ? "active" : ""}`}
+                                            onClick={() => setStickerTab("recent")}
+                                        >
+                                            Gần đây
+                                        </button>
+                                        <button
+                                            type="button"
+                                            className={`sticker-tab ${stickerTab === "all" ? "active" : ""}`}
+                                            onClick={() => setStickerTab("all")}
+                                        >
+                                            Tất cả
+                                        </button>
+                                    </div>
+                                    <div className="sticker-grid">
+                                        {(stickerTab === "recent" ? recentStickerKeys : ALL_STICKER_KEYS).map((key) => {
+                                            const src = stickerCtx(key);
+                                            return (
+                                                <button
+                                                    key={key}
+                                                    type="button"
+                                                    className="sticker-item"
+                                                    onClick={() => handleStickerClick(key)}
+                                                    title={key.replace("./", "")}
+                                                >
+                                                    <img src={src} alt={key} />
+                                                </button>
+                                            );
+                                        })}
+                                        {stickerTab === "recent" && recentStickerKeys.length === 0 && (
+                                            <div className="sticker-empty">Chưa có sticker gần đây</div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
 
                             <div className="bottom-toolbar">
                                 <FontAwesomeIcon
@@ -309,6 +386,11 @@ function ChatAppContent() {
                                     className="toolbar-icon"
                                     icon={faIcons}
                                     title="Sticker"
+                                    onClick={() => {
+                                        setShowSticker((v) => !v);
+                                        setStickerTab("all");
+                                        setShowEmoji(false);
+                                    }}
                                 />
 
                                 <FontAwesomeIcon
@@ -330,7 +412,6 @@ function ChatAppContent() {
                                     icon={faFaceSmileBeam} onClick={() => setShowEmoji((v) => !v)}
                                     title="Emoji"
                                 />
-
                                 {uploading && (
                                     <span className="upload-progress">{Math.round(uploadProgress)}%</span>
                                 )}
@@ -358,8 +439,7 @@ function ChatAppContent() {
                                         setText("");
                                     }}
                                     className="send-mes-btn"
-                                    disabled={uploading}
-                                >
+                                    disabled={uploading}>
                                     <FontAwesomeIcon className="send__mes-icon" icon={faPaperPlane}/>
                                 </button>
                             </div>
