@@ -1,27 +1,27 @@
-import {getSocket} from "./socket";
+import { getSocket } from "./socket";
 
-export function sendMessageApi(toUser : string,mes : string){
-    const socket = getSocket()
+export function sendMessageApi(toUser: string, mes: string) {
+    const socket = getSocket();
+    if (!socket) return;
 
+    const safeMes = encodeURIComponent(mes);
 
-    if(!socket) return
-
-    console.log(mes)
     const sendMessage = () => {
-        socket.send(JSON.stringify(
-            {
+        socket.send(
+            JSON.stringify({
                 action: "onchat",
                 data: {
                     event: "SEND_CHAT",
                     data: {
                         type: "people",
                         to: toUser,
-                        mes: mes
-                    }
-                }
-            }
-        ))
-    }
+                        mes: safeMes,
+                    },
+                },
+            })
+        );
+    };
+
     if (socket.readyState === WebSocket.OPEN) {
         sendMessage();
     } else {
@@ -29,10 +29,8 @@ export function sendMessageApi(toUser : string,mes : string){
     }
 }
 
-export function getMessageApi(targetUser : string,page : number){
+export function getMessageApi(targetUser: string, page: number) {
     const socket = getSocket();
-
-    console.log("target user : "  + targetUser)
 
     if (!socket) {
         console.error("WebSocket chưa sẵn sàng. Hãy gọi connectSocket trước.");
@@ -40,20 +38,18 @@ export function getMessageApi(targetUser : string,page : number){
     }
 
     const sendGetMessage = () => {
-        socket.send(JSON.stringify({
-            action: "onchat",
-            data: {
-                event: "GET_PEOPLE_CHAT_MES",
+        socket.send(
+            JSON.stringify({
+                action: "onchat",
                 data: {
-                    name: targetUser,
-                    page: page
-                }
-            }
-            // action: "onchat",
-            // data: {
-            //     event: "GET_USER_LIST"
-            // }
-        }));
+                    event: "GET_PEOPLE_CHAT_MES",
+                    data: {
+                        name: targetUser,
+                        page: page,
+                    },
+                },
+            })
+        );
     };
 
     if (socket.readyState === WebSocket.OPEN) {
@@ -61,13 +57,10 @@ export function getMessageApi(targetUser : string,page : number){
     } else {
         socket.addEventListener("open", sendGetMessage, { once: true });
     }
-
-
 }
 
-export function getConversationApi(){
+export function getConversationApi() {
     const socket = getSocket();
-
 
     if (!socket) {
         console.error("WebSocket chưa sẵn sàng. Hãy gọi connectSocket trước.");
@@ -75,20 +68,14 @@ export function getConversationApi(){
     }
 
     const sendGetConversation = () => {
-        socket.send(JSON.stringify({
-            // action: "onchat",
-            // data: {
-            //     event: "GET_PEOPLE_CHAT_MES",
-            //     data: {
-            //         name: targetUser,
-            //         page: page
-            //     }
-            // }
-            action: "onchat",
-            data: {
-                event: "GET_USER_LIST"
-            }
-        }));
+        socket.send(
+            JSON.stringify({
+                action: "onchat",
+                data: {
+                    event: "GET_USER_LIST",
+                },
+            })
+        );
     };
 
     if (socket.readyState === WebSocket.OPEN) {
@@ -96,8 +83,6 @@ export function getConversationApi(){
     } else {
         socket.addEventListener("open", sendGetConversation, { once: true });
     }
-
-
 }
 
 export function createRoomApi(name: string) {
@@ -108,13 +93,15 @@ export function createRoomApi(name: string) {
     }
 
     const send = () => {
-        socket.send(JSON.stringify({
-            action: "onchat",
-            data: {
-                event: "CREATE_ROOM",
-                data: { name }
-            }
-        }));
+        socket.send(
+            JSON.stringify({
+                action: "onchat",
+                data: {
+                    event: "CREATE_ROOM",
+                    data: { name },
+                },
+            })
+        );
     };
 
     if (socket.readyState === WebSocket.OPEN) {
