@@ -1,6 +1,9 @@
 import {useMessage} from "../../contexts/MessageContext";
 import {useAuth} from "../../contexts/AuthContext";
 import "./MessageList.css";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFileArrowDown } from "@fortawesome/free-solid-svg-icons";
+
 import {useEffect, useRef} from "react";
 
 const IMAGE_PREFIX = "__IMG__:";
@@ -50,8 +53,18 @@ function renderMessageContent(text: string) {
         const name = encodedName ? decodeURIComponent(encodedName) : "Tải file";
 
         return (
-            <a href={url} target="_blank" rel="noreferrer">
-                📎 {name}
+            <a
+                className="file-attach"
+                href={url}
+                download={name}
+                target="_self"
+                rel="noreferrer"
+                title={name}
+            >
+    <span className="file-attach__icon">
+      <FontAwesomeIcon icon={faFileArrowDown} />
+    </span>
+                <span className="file-attach__name">{name}</span>
             </a>
         );
     }
@@ -62,16 +75,15 @@ function renderMessageContent(text: string) {
 export default function MessageList() {
     const {messages} = useMessage();
     const {user} = useAuth();
-
-    const mesEndRef = useRef(null);
-
+    const mesEndRef = useRef<HTMLDivElement | null>(null);
     const sortedMes = [...messages].sort((a, b) => a.id - b.id);
-
     const scrollToBottom = () => {
         mesEndRef.current?.scrollIntoView({behavior: "smooth"});
     };
 
-    useEffect(() => scrollToBottom, [messages]);
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
 
     const groupedMessages: any[] = [];
     sortedMes.forEach((msg) => {

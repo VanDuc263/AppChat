@@ -31,6 +31,15 @@ function ChatAppContent() {
 
     useMessageListener();
 
+    const imageInputRef = useRef<HTMLInputElement | null>(null);
+    const videoInputRef = useRef<HTMLInputElement | null>(null);
+    const fileInputRef  = useRef<HTMLInputElement | null>(null);
+
+    const handlePickImage = () => imageInputRef.current?.click();
+    const handlePickVideo = () => videoInputRef.current?.click();
+    const handlePickFile  = () => fileInputRef.current?.click();
+
+
     /* ===== CREATE ROOM STATE ===== */
     const [showCreateRoom, setShowCreateRoom] = useState(false);
     const [roomName, setRoomName] = useState("");
@@ -49,7 +58,6 @@ function ChatAppContent() {
         if (f.type?.startsWith("video/")) return "video";
         return "file";
     };
-    const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const [uploading, setUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
@@ -93,8 +101,6 @@ function ChatAppContent() {
         window.addEventListener("CREATE_ROOM_SUCCESS", handleCreateRoomSuccess);
         return () => window.removeEventListener("CREATE_ROOM_SUCCESS", handleCreateRoomSuccess);
     }, []);
-
-    const handlePickAttachment = () => fileInputRef.current?.click();
 
     const closeUploadModal = () => {
         if (previewUrl) URL.revokeObjectURL(previewUrl);
@@ -209,16 +215,31 @@ function ChatAppContent() {
                         <MessageList/>
 
                         <div className="content-bottom">
-                            {/* Hidden file input for image upload */}
                             <input
-                                ref={fileInputRef}
+                                ref={imageInputRef}
                                 type="file"
-                                accept="image/*,video/*,application/*,text/*"
+                                accept="image/*"
                                 hidden
                                 onChange={handleFileChange}
                             />
 
-                            {/* Emoji picker popup */}
+                            <input
+                                ref={videoInputRef}
+                                type="file"
+                                accept="video/*"
+                                hidden
+                                onChange={handleFileChange}
+                            />
+
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept="application/*,text/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar"
+                                hidden
+                                onChange={handleFileChange}
+                            />
+
+
                             {showEmoji && (
                                 <div ref={emojiWrapRef} className="emoji-picker-popup">
                                     <EmojiPicker onEmojiClick={handleEmojiClick}/>
@@ -227,39 +248,42 @@ function ChatAppContent() {
 
 
                             <div className="bottom-toolbar">
-                                <div className="upload-toolbar">
-                                    <FontAwesomeIcon
-                                        className={`toolbar-icon ${uploading ? "toolbar-icon--disabled" : ""}`}
-                                        icon={faImage}
-                                        onClick={uploading ? undefined : handlePickAttachment}
-                                        title="Gửi ảnh / video / file"
-                                    />
-                                    {uploading && (
-                                        <span className="upload-progress">{Math.round(uploadProgress)}%</span>
-                                    )}
-                                </div>
+                                <FontAwesomeIcon
+                                    className={`toolbar-icon ${uploading ? "toolbar-icon--disabled" : ""}`}
+                                    icon={faImage}
+                                    onClick={uploading ? undefined : handlePickImage}
+                                    title="Gửi ảnh"
+                                />
 
                                 <FontAwesomeIcon
                                     className="toolbar-icon"
                                     icon={faIcons}
-                                    onClick={() => setShowEmoji((v) => !v)}
+                                    title="Sticker"
                                 />
+
                                 <FontAwesomeIcon
-                                    className="toolbar-icon"
+                                    className={`toolbar-icon ${uploading ? "toolbar-icon--disabled" : ""}`}
                                     icon={faVideo}
+                                    onClick={uploading ? undefined : handlePickVideo}
                                     title="Gửi video"
                                 />
 
                                 <FontAwesomeIcon
-                                    className="toolbar-icon"
+                                    className={`toolbar-icon ${uploading ? "toolbar-icon--disabled" : ""}`}
                                     icon={faPaperclip}
+                                    onClick={uploading ? undefined : handlePickFile}
                                     title="Gửi file"
                                 />
+
                                 <FontAwesomeIcon
                                     className="toolbar-icon"
-                                    icon={faFaceSmileBeam}
-                                    title="Sticker"
+                                    icon={faFaceSmileBeam} onClick={() => setShowEmoji((v) => !v)}
+                                    title="Emoji"
                                 />
+
+                                {uploading && (
+                                    <span className="upload-progress">{Math.round(uploadProgress)}%</span>
+                                )}
                             </div>
 
                             <div className="bottom__message">
@@ -347,7 +371,6 @@ function ChatAppContent() {
         </div>
     );
 }
-
 export default function App() {
     return (
         <MessageProvider>
