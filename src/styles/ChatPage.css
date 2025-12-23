@@ -71,18 +71,25 @@
     background: #ffffff;
 }
 
-/* ===== CREATE ROOM WRAP ===== */
-.create-room-wrap {
+.room-action-row {
     margin-top: 14px;
     display: flex;
-    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.room-action-item {
+    display: flex;
+    flex-direction: column; /* icon trên - chữ dưới */
     align-items: center;
     gap: 6px;
+    cursor: pointer;
+    transition: all 0.25s ease;
 }
-/* ===== CREATE ROOM BUTTON ===== */
-.create-room-btn {
-    width: 22px;
-    height: 22px;
+
+.room-action-item .create-room-btn {
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     border: none;
     background: linear-gradient(135deg, #667eea, #764ba2);
@@ -93,12 +100,23 @@
     align-items: center;
     justify-content: center;
     transition: all 0.25s ease;
-
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.create-room-btn:hover {
-    transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+.room-action-item:hover .create-room-btn {
+    transform: scale(1.15);
+    box-shadow: 0 8px 18px rgba(118, 75, 162, 0.45);
+}
+
+.room-action-item .create-room-text {
+    font-size: 1.35rem;
+    color: #4b5563;
+    font-weight: 500;
+    user-select: none;
+}
+
+.room-action-item:hover .create-room-text {
+    color: #7c3aed;
 }
 
 .sidebar__bottom {
