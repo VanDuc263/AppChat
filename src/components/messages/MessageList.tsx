@@ -9,6 +9,19 @@ import {useEffect, useRef} from "react";
 const IMAGE_PREFIX = "__IMG__:";
 const VIDEO_PREFIX = "__VID__:";
 const FILE_PREFIX = "__FILE__:";
+const STICKER_PREFIX = "__STK__:";
+
+const stickerCtx = (require as any).context("../../stickers", false, /\.png$/i);
+const stickerSrc = (key: string) => {
+    const k = key.startsWith("./") ? key : `./${key}`;
+    try {
+        return stickerCtx(k);
+    } catch {
+        return "";
+    }
+};
+
+const isSticker = (t: string) => typeof t === "string" && t.startsWith(STICKER_PREFIX);
 
 function renderMessageContent(text: string) {
     if (typeof text === "string" && text.startsWith(IMAGE_PREFIX)) {
@@ -68,6 +81,13 @@ function renderMessageContent(text: string) {
             </a>
         );
     }
+    if (typeof text === "string" && text.startsWith(STICKER_PREFIX)) {
+        const key = text.slice(STICKER_PREFIX.length).trim();
+        const src = stickerSrc(key);
+        if (!src) return <>{text}</>;
+
+        return <img src={src} alt="sticker" loading="lazy" className="sticker-img" />;
+    }
 
     return <>{text}</>;
 }
@@ -113,12 +133,35 @@ export default function MessageList() {
                         {!isMe && (
                             <div className="sender">{group.name}</div>
                         )}
+                        {(() => {
+                            const segments: { type: "sticker" | "bubble"; items: string[] }[] = [];
 
-                        {group.messages.map((text: string, index: number) => (
-                            <div key={index} className="message-bubble">
-                                {renderMessageContent(text)}
-                            </div>
-                        ))}
+                            group.messages.forEach((t: string) => {
+                                if (isSticker(t)) {
+                                    const last = segments[segments.length - 1];
+                                    if (last?.type === "sticker") last.items.push(t);
+                                    else segments.push({ type: "sticker", items: [t] });
+                                } else {
+                                    segments.push({ type: "bubble", items: [t] });
+                                }
+                            });
+
+                            return segments.map((seg, si) =>
+                                seg.type === "sticker" ? (
+                                    <div key={`stk-${si}`} className="sticker-pack">
+                                        {seg.items.map((t, i) => (
+                                            <div key={i} className="sticker-cell">
+                                                {renderMessageContent(t)}
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <div key={`msg-${si}`} className="message-bubble">
+                                        {renderMessageContent(seg.items[0])}
+                                    </div>
+                                )
+                            );
+                        })()}
                     </div>
                 );
             })}

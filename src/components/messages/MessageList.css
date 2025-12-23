@@ -85,3 +85,28 @@
 .message-group .message-bubble:first-child {
     margin-top: 0;
 }
+
+.sticker-pack{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+    max-width: 316px;
+}
+.message-group .sticker-pack:first-child{
+    margin-top: 0; }
+
+.message-group.me .sticker-pack{
+    justify-content: flex-end; }
+.message-group.other .sticker-pack{
+    justify-content: flex-start; }
+
+.sticker-cell{
+    flex: 0 0 auto; }
+
+.sticker-img{
+    width: 100px;
+    height: auto;
+    display: block;
+    background: transparent;
+}
