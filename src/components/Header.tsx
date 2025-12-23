@@ -15,7 +15,7 @@ export default function Header() {
                 {/* Left: Logo + Title */}
                 <div className="header__left">
                     <div className="header-logo">
-                        <FontAwesomeIcon icon={faCommentDots} className="logo-icon"/>
+                        <FontAwesomeIcon  icon={faCommentDots} className="logo-icon"/>
                     </div>
                     <h1 className="header-title">
                         <span className="title-gradient">MESSAGING</span>

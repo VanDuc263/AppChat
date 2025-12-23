@@ -40,6 +40,22 @@ function ChatAppContent() {
         setRoomName("");
         setShowCreateRoom(false);
     };
+
+    useEffect(() => {
+        const handleKeyDown = (ev : KeyboardEvent) => {
+            if(ev.key === "Enter"){
+                if(!text.trim()) return
+                sendMessage(currentConversation, text)
+                setText("")
+            }
+        }
+        document.addEventListener("keydown",handleKeyDown)
+
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [text,currentConversation]);
+
     /* ===== LISTEN CREATE_ROOM SUCCESS ===== */
     useEffect(() => {
         const handleCreateRoomSuccess = (e: any) => {

@@ -41,17 +41,40 @@ function getMessages(targetUser: string, page: number) {
     const socket = connectSocket();
 
     const sendGetMessages = () => {
-        console.log(1)
         socket.send(JSON.stringify({
-            action : "onchat",
-            data : {
-                event : "SEND_CHAT",
-                data : {
-                    type : "people",
-                    to : "22131@st.hcmuaf.edu.vn",
-                    mes : "test --- hihihi"
+            // action: "onchat",
+            // data: {
+            //     event: "JOIN_ROOM",
+            //     data: {
+            //         name: "Nhom_10"
+            //     }
+            // }
+            // action : "onchat",
+            // data : {
+            //     event : "SEND_CHAT",
+            //     data : {
+            //         type : "room",
+            //         // to : "22131@st.hcmuaf.edu.vn",
+            //         to : "Nhom_110",
+            //         mes : "test --- hihihi"
+            //     }
+            // }
+            action: "onchat",
+            data: {
+                event: "GET_ROOM_CHAT_MES",
+                data: {
+                    name: "Nhom_110",
+                    page:1
                 }
             }
+            //     action: "onchat",
+            //     data: {
+            //     event: "CREATE_ROOM",
+            //         data: {
+            //         name: "Nhom_10"
+            //     }
+            // }
+
             // action: "onchat",
             // data: {
             //     event: "GET_PEOPLE_CHAT_MES",
@@ -73,7 +96,20 @@ function getMessages(targetUser: string, page: number) {
             // }
         }));
     };
-
+    // socket.send(JSON.stringify(
+    //     {
+    //         action : "onchat",
+    //         data : {
+    //             event : "SEND_CHAT",
+    //             data : {
+    //                 type : "room",
+    //                 // to : "22131@st.hcmuaf.edu.vn",
+    //                 to : "Nhom_10",
+    //                 mes : "test --- hihihi"
+    //             }
+    //         }
+    //     }
+    // ))
     if (socket.readyState === WebSocket.OPEN) {
         sendGetMessages();
     } else {
