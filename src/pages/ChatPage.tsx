@@ -1,6 +1,6 @@
 import MessageList from "../components/messages/MessageList";
 import {useMessageListener} from "../hooks/useMessageListener";
-import {MessageProvider, useMessage,  ConversationType} from "../contexts/MessageContext";
+import {MessageProvider, useMessage} from "../contexts/MessageContext";
 import {useAuth} from "../contexts/AuthContext";
 import "../styles/ChatPage.css";
 import Header from "../components/Header";
