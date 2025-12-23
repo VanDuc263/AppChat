@@ -8,7 +8,7 @@ import "../styles/base.css";
 import ConversationItem from "../components/conversations/ConversationItem";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {ChangeEvent, useEffect, useRef, useState} from "react";
-import {faIcons, faImage, faPaperPlane, faPlus, faCircle} from "@fortawesome/free-solid-svg-icons";
+import {faIcons, faImage, faPaperPlane, faPlus, faCircle,faVideo, faPaperclip, faFaceSmileBeam} from "@fortawesome/free-solid-svg-icons";
 import {createRoomApi} from "../services/chatService";
 import {uploadFileToCloudinary} from "../services/cloudinaryUpload";
 import EmojiPicker, {EmojiClickData} from "emoji-picker-react";
@@ -50,6 +50,7 @@ function ChatAppContent() {
         return "file";
     };
     const fileInputRef = useRef<HTMLInputElement | null>(null);
+
     const [uploading, setUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
 
@@ -224,6 +225,7 @@ function ChatAppContent() {
                                 </div>
                             )}
 
+
                             <div className="bottom-toolbar">
                                 <div className="upload-toolbar">
                                     <FontAwesomeIcon
@@ -241,6 +243,22 @@ function ChatAppContent() {
                                     className="toolbar-icon"
                                     icon={faIcons}
                                     onClick={() => setShowEmoji((v) => !v)}
+                                />
+                                <FontAwesomeIcon
+                                    className="toolbar-icon"
+                                    icon={faVideo}
+                                    title="Gửi video"
+                                />
+
+                                <FontAwesomeIcon
+                                    className="toolbar-icon"
+                                    icon={faPaperclip}
+                                    title="Gửi file"
+                                />
+                                <FontAwesomeIcon
+                                    className="toolbar-icon"
+                                    icon={faFaceSmileBeam}
+                                    title="Sticker"
                                 />
                             </div>
 
