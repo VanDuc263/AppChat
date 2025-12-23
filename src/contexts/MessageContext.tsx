@@ -1,88 +1,121 @@
-import { createContext, useContext, useState, ReactNode, useEffect } from "react";
-import { getSocket } from "../services/socket";
-import { sendMessageApi,getMessageApi } from "../services/chatService"
+import { createContext, useContext, useState, ReactNode } from "react";
+import { sendMessageApi, getMessageApi } from "../services/chatService";
 
-interface Message {
-    id : number;
+export interface Message {
+    id: number;
     name: string;
     to: string;
     mes: string;
-    type : number;
+    type: number;
 }
 
-interface Conversation{
-    name : string;
-    type : 1;
-    actionTime : string;
+export interface Conversation {
+    name: string;
+    type: number;
+    actionTime: string;
 }
 
 interface MessageContextType {
-    conversations : Conversation[]
+    conversations: Conversation[];
     messages: Message[];
     page: number;
+    currentConversation: string | null;
+
     setPage: (page: number) => void;
-    currentConversation : string | null;
+    setCurrentConversation: (name: string | null) => void;
 
     sendMessage: (to: string, text: string) => void;
     addMessage: (message: Message) => void;
-    addMessages: (messages: Message[]) => void;
-    addConversations : (conversatins : Conversation[]) => void;
+
+    replaceMessages: (messages: Message[]) => void;
+    replaceConversations: (conversations: Conversation[]) => void;
+
     selectConversation: (username: string, page?: number) => void;
 }
-
-
 
 const MessageContext = createContext<MessageContextType | null>(null);
 
 export function MessageProvider({ children }: { children: ReactNode }) {
     const [messages, setMessages] = useState<Message[]>([]);
-    const [conversations,setConversations] = useState<Conversation[]>([])
-    const [page,setPage] = useState<number>(2)
-    const [currentConversation,setCurrentConversation] = useState<string | null>(null)
+    const [conversations, setConversations] = useState<Conversation[]>([]);
+    const [page, setPage] = useState(1);
+    const [currentConversation, setCurrentConversation] = useState<string | null>(null);
 
-    const sendMessage = (to: string, text: string) => {
-        const username = localStorage.getItem("username")
-        if(!username) return
-        const newMes : Message ={
-            id : Date.now(),
-            name : username,
-            to : to,
-            mes : text,
-            type : 1,
-        }
-
-        addMessage(newMes)
-        sendMessageApi(to,text)
-    };
+    // ========= ACTIONS =========
 
     const addMessage = (message: Message) => {
-        setMessages(prev => [...prev, message]);
-        console.log(messages)
+        setMessages((prev) => {
+            const last = prev[prev.length - 1];
+            if (
+                last &&
+                last.name === message.name &&
+                last.to === message.to &&
+                last.mes === message.mes &&
+                Math.abs(message.id - last.id) < 1500
+            ) {
+                return prev;
+            }
+            return [...prev, message];
+        });
     };
 
-    const addMessages = (newMessages: Message[]) => {
-        setMessages(prev => [...prev, ...newMessages]);
+    const replaceMessages = (newMessages: Message[]) => {
+        const sorted = [...newMessages].sort((a, b) => a.id - b.id);
+        setMessages(sorted);
     };
-    const addConversations = (newConversations : Conversation[]) =>{
-        setConversations(prev => [...prev,...newConversations])
-    }
-    const selectConversation = (name : string,pageParam? : number) => {
-        try{
-            const p = pageParam ?? page
-            setCurrentConversation(name);
-            setPage(2)
-            setMessages([])
-            getMessageApi(name,p)
 
-        }catch (e){
+    const replaceConversations = (newConversations: Conversation[]) => {
+        setConversations(newConversations);
+    };
 
-        }
-    }
+    const sendMessage = (to: string, text: string) => {
+        const username = localStorage.getItem("username");
+        if (!username) return;
+
+        const newMes: Message = {
+            id: Date.now(),
+            name: username,
+            to,
+            mes: text,
+            type: 1,
+        };
+
+        addMessage(newMes);
+        sendMessageApi(to, text);
+    };
+
+    const selectConversation = (name: string, pageParam = 1) => {
+        setCurrentConversation(name);
+        setPage(pageParam);
+        setMessages([]); // messages sẽ do persistence hook load
+        getMessageApi(name, pageParam);
+    };
+
     return (
-        <MessageContext.Provider value={{ conversations,selectConversation,currentConversation,addConversations,messages,page, sendMessage,addMessage,addMessages,setPage }}>
+        <MessageContext.Provider
+            value={{
+                conversations,
+                messages,
+                page,
+                currentConversation,
+
+                setPage,
+                setCurrentConversation,
+
+                sendMessage,
+                addMessage,
+                replaceMessages,
+                replaceConversations,
+                selectConversation,
+            }}
+        >
             {children}
         </MessageContext.Provider>
     );
 }
 
-export const useMessage = () => useContext(MessageContext);
+export const useMessage = () => {
+    const ctx = useContext(MessageContext);
+    if (!ctx) throw new Error("useMessage must be used within MessageProvider");
+    return ctx;
+};
