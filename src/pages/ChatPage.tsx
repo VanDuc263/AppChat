@@ -12,6 +12,7 @@ import {faIcons, faImage, faPaperPlane, faPlus, faCircle} from "@fortawesome/fre
 import {createRoomApi} from "../services/chatService";
 import {uploadImageToCloudinary} from "../services/cloudinaryUpload";
 import EmojiPicker, {EmojiClickData} from "emoji-picker-react";
+import { useChatPersistence } from "../hooks/useChatPersistence";
 
 
 interface Room {
@@ -23,6 +24,7 @@ interface Room {
 }
 
 function ChatAppContent() {
+    useChatPersistence();
     const {user} = useAuth();
     const [text, setText] = useState("");
     const {sendMessage, currentConversation, selectConversation, conversations} = useMessage();

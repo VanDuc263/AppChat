@@ -3,17 +3,25 @@ import { useAuth } from "../contexts/AuthContext";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
 import ChatPage from "../pages/ChatPage";
-import {MessageProvider} from "../contexts/MessageContext";
 import React from "react";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 
-// function ProtectedRoute({ children }: { children: React.ReactNode }) {
-//     const { user } = useAuth();
-//     return user ? children : <Navigate to="/login" replace />;
-// }
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { user,logout } = useAuth();
-    return user ? <>{children}</> : <Navigate to="/login" replace />;
+    const { user,logout,authStatus } = useAuth();
+    if(authStatus === "unauthenticated")
+        return <Navigate to="/login" replace />;
+    return (
+        <>
+            {children}
+            {authStatus === "checking" && (
+                <LoadingSpinner
+                    text="Đang kết nối lại..."
+                    fullScreen
+                />
+            )}
+        </>
+    );
 };
 
 
@@ -27,7 +35,7 @@ export default function AppRoutes(){
                     path="/chat"
                     element={
                         <ProtectedRoute>
-                                <ChatPage/>
+                            <ChatPage/>
                         </ProtectedRoute>
                     }
                 />

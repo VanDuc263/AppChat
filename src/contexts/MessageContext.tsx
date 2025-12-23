@@ -1,5 +1,5 @@
-import { createContext, useContext, useEffect, useMemo, useState, ReactNode } from "react";
-import { sendMessageApi, getMessageApi, getConversationApi } from "../services/chatService";
+import { createContext, useContext, useState, ReactNode } from "react";
+import { sendMessageApi, getMessageApi } from "../services/chatService";
 
 export interface Message {
     id: number;
@@ -19,83 +19,29 @@ interface MessageContextType {
     conversations: Conversation[];
     messages: Message[];
     page: number;
-    setPage: (page: number) => void;
     currentConversation: string | null;
 
+    setPage: (page: number) => void;
+    setCurrentConversation: (name: string | null) => void;
+
     sendMessage: (to: string, text: string) => void;
-
     addMessage: (message: Message) => void;
-    replaceMessages: (messages: Message[]) => void;
 
+    replaceMessages: (messages: Message[]) => void;
     replaceConversations: (conversations: Conversation[]) => void;
+
     selectConversation: (username: string, page?: number) => void;
 }
 
 const MessageContext = createContext<MessageContextType | null>(null);
 
-function safeParse<T>(raw: string | null, fallback: T): T {
-    try {
-        if (!raw) return fallback;
-        return JSON.parse(raw) as T;
-    } catch {
-        return fallback;
-    }
-}
-
-function uniqByName(convs: Conversation[]) {
-    const map = new Map<string, Conversation>();
-    convs.forEach((c) => map.set(c.name, c));
-    return Array.from(map.values());
-}
-
 export function MessageProvider({ children }: { children: ReactNode }) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [conversations, setConversations] = useState<Conversation[]>([]);
-    const [page, setPage] = useState<number>(1);
+    const [page, setPage] = useState(1);
     const [currentConversation, setCurrentConversation] = useState<string | null>(null);
 
-    const me = useMemo(() => localStorage.getItem("username") ?? "", []);
-
-    const keyCurrent = useMemo(() => (me ? `chat:lastConversation:${me}` : ""), [me]);
-    const keyMessages = (conv: string) => (me ? `chat:messages:${me}:${conv}` : "");
-    const keyConvs = useMemo(() => (me ? `chat:conversations:${me}` : ""), [me]);
-
-    useEffect(() => {
-        if (!me) return;
-
-        const cachedConvs = safeParse<Conversation[]>(localStorage.getItem(keyConvs), []);
-        if (cachedConvs.length) setConversations(uniqByName(cachedConvs));
-
-        const lastConv = safeParse<string | null>(localStorage.getItem(keyCurrent), null);
-        if (!lastConv) return;
-
-        setCurrentConversation(lastConv);
-
-        const cachedMsgs = safeParse<Message[]>(localStorage.getItem(keyMessages(lastConv)), []);
-        setMessages(cachedMsgs);
-
-        getMessageApi(lastConv, 1);
-    }, [me, keyConvs, keyCurrent]);
-
-    useEffect(() => {
-        getConversationApi();
-    }, []);
-
-    useEffect(() => {
-        if (!me || !keyConvs) return;
-        localStorage.setItem(keyConvs, JSON.stringify(conversations));
-    }, [me, keyConvs, conversations]);
-
-    useEffect(() => {
-        if (!me || !keyCurrent) return;
-        if (!currentConversation) return;
-        localStorage.setItem(keyCurrent, JSON.stringify(currentConversation));
-    }, [me, keyCurrent, currentConversation]);
-
-    useEffect(() => {
-        if (!me || !currentConversation) return;
-        localStorage.setItem(keyMessages(currentConversation), JSON.stringify(messages));
-    }, [me, currentConversation, messages]);
+    // ========= ACTIONS =========
 
     const addMessage = (message: Message) => {
         setMessages((prev) => {
@@ -119,7 +65,7 @@ export function MessageProvider({ children }: { children: ReactNode }) {
     };
 
     const replaceConversations = (newConversations: Conversation[]) => {
-        setConversations(uniqByName(newConversations));
+        setConversations(newConversations);
     };
 
     const sendMessage = (to: string, text: string) => {
@@ -138,19 +84,11 @@ export function MessageProvider({ children }: { children: ReactNode }) {
         sendMessageApi(to, text);
     };
 
-    const selectConversation = (name: string, pageParam?: number) => {
-        const p = pageParam ?? 1;
+    const selectConversation = (name: string, pageParam = 1) => {
         setCurrentConversation(name);
-        setPage(p);
-
-        if (me) {
-            const cachedMsgs = safeParse<Message[]>(localStorage.getItem(keyMessages(name)), []);
-            setMessages(cachedMsgs);
-        } else {
-            setMessages([]);
-        }
-
-        getMessageApi(name, p);
+        setPage(pageParam);
+        setMessages([]); // messages sẽ do persistence hook load
+        getMessageApi(name, pageParam);
     };
 
     return (
@@ -159,8 +97,11 @@ export function MessageProvider({ children }: { children: ReactNode }) {
                 conversations,
                 messages,
                 page,
-                setPage,
                 currentConversation,
+
+                setPage,
+                setCurrentConversation,
+
                 sendMessage,
                 addMessage,
                 replaceMessages,
