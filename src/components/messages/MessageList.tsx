@@ -4,6 +4,8 @@ import "./MessageList.css";
 import {useEffect, useRef} from "react";
 
 const IMAGE_PREFIX = "__IMG__:";
+const VIDEO_PREFIX = "__VID__:";
+const FILE_PREFIX = "__FILE__:";
 
 function renderMessageContent(text: string) {
     if (typeof text === "string" && text.startsWith(IMAGE_PREFIX)) {
@@ -26,6 +28,34 @@ function renderMessageContent(text: string) {
         );
     }
 
+    if (typeof text === "string" && text.startsWith(VIDEO_PREFIX)) {
+        const url = text.slice(VIDEO_PREFIX.length).trim();
+        if (!url) return null;
+
+        return (
+            <video
+                src={url}
+                controls
+                preload="metadata"
+                style={{maxWidth: 320, width: "100%", borderRadius: 12}}
+            />
+        );
+    }
+
+    if (typeof text === "string" && text.startsWith(FILE_PREFIX)) {
+        const payload = text.slice(FILE_PREFIX.length).trim();
+        const [url, encodedName] = payload.split("||");
+        if (!url) return null;
+
+        const name = encodedName ? decodeURIComponent(encodedName) : "Tải file";
+
+        return (
+            <a href={url} target="_blank" rel="noreferrer">
+                📎 {name}
+            </a>
+        );
+    }
+
     return <>{text}</>;
 }
 
@@ -35,13 +65,13 @@ export default function MessageList() {
 
     const mesEndRef = useRef(null);
 
-    const sortedMes = [...messages].sort((a,b) => a.id - b.id);
+    const sortedMes = [...messages].sort((a, b) => a.id - b.id);
 
     const scrollToBottom = () => {
-        mesEndRef.current?.scrollIntoView({behavior : "smooth"});
+        mesEndRef.current?.scrollIntoView({behavior: "smooth"});
     };
 
-    useEffect(() => scrollToBottom,[messages]);
+    useEffect(() => scrollToBottom, [messages]);
 
     const groupedMessages: any[] = [];
     sortedMes.forEach((msg) => {
@@ -51,7 +81,7 @@ export default function MessageList() {
             lastGroup.messages.push(msg.mes);
         } else {
             groupedMessages.push({
-                id : msg.id,
+                id: msg.id,
                 name: msg.name,
                 messages: [msg.mes],
             });

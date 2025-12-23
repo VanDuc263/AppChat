@@ -10,7 +10,7 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {ChangeEvent, useEffect, useRef, useState} from "react";
 import {faIcons, faImage, faPaperPlane, faPlus, faCircle} from "@fortawesome/free-solid-svg-icons";
 import {createRoomApi} from "../services/chatService";
-import {uploadImageToCloudinary} from "../services/cloudinaryUpload";
+import {uploadFileToCloudinary} from "../services/cloudinaryUpload";
 import EmojiPicker, {EmojiClickData} from "emoji-picker-react";
 import { useChatPersistence } from "../hooks/useChatPersistence";
 
@@ -40,6 +40,15 @@ function ChatAppContent() {
     const emojiWrapRef = useRef<HTMLDivElement | null>(null);
 
     const IMAGE_PREFIX = "__IMG__:";
+    const VIDEO_PREFIX = "__VID__:";
+    const FILE_PREFIX  = "__FILE__:";
+
+    type PendingKind = "image" | "video" | "file";
+    const getKind = (f: File): PendingKind => {
+        if (f.type?.startsWith("image/")) return "image";
+        if (f.type?.startsWith("video/")) return "video";
+        return "file";
+    };
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [uploading, setUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
@@ -84,7 +93,7 @@ function ChatAppContent() {
         return () => window.removeEventListener("CREATE_ROOM_SUCCESS", handleCreateRoomSuccess);
     }, []);
 
-    const handlePickImage = () => fileInputRef.current?.click();
+    const handlePickAttachment = () => fileInputRef.current?.click();
 
     const closeUploadModal = () => {
         if (previewUrl) URL.revokeObjectURL(previewUrl);
@@ -93,7 +102,7 @@ function ChatAppContent() {
         setShowUploadModal(false);
     };
 
-    const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         const input = e.target;
         const file = input.files?.[0];
         if (!file) return;
@@ -105,20 +114,20 @@ function ChatAppContent() {
         }
 
         if (file.size > 10 * 1024 * 1024) {
-            alert("Ảnh quá lớn (tối đa 10MB)");
+            alert("File quá lớn (tối đa 10MB)");
             input.value = "";
             return;
         }
 
-        const url = URL.createObjectURL(file);
+        const kind = getKind(file);
+        const url = (kind === "image" || kind === "video") ? URL.createObjectURL(file) : "";
         setPendingFile(file);
         setPreviewUrl(url);
         setShowUploadModal(true);
 
         input.value = "";
     };
-
-    const confirmSendImage = async () => {
+    const confirmSendAttachment = async () => {
         if (!pendingFile) return;
         if (!currentConversation) {
             closeUploadModal();
@@ -127,17 +136,24 @@ function ChatAppContent() {
         }
 
         const file = pendingFile;
+        const kind = getKind(file);
         closeUploadModal();
 
         setUploading(true);
         setUploadProgress(0);
 
         try {
-            const url = await uploadImageToCloudinary(file, setUploadProgress);
-            sendMessage(currentConversation, `${IMAGE_PREFIX}${url}`);
+            const url = await uploadFileToCloudinary(file, setUploadProgress);
+            if (kind === "image") {
+                sendMessage(currentConversation, `${IMAGE_PREFIX}${url}`);
+            } else if (kind === "video") {
+                sendMessage(currentConversation, `${VIDEO_PREFIX}${url}`);
+            } else {
+                sendMessage(currentConversation, `${FILE_PREFIX}${url}||${encodeURIComponent(file.name)}`);
+            }
         } catch (err: any) {
             console.error(err);
-            alert(err?.message || "Upload ảnh thất bại");
+            alert(err?.message || "Upload thất bại");
         } finally {
             setUploading(false);
             setUploadProgress(0);
@@ -196,9 +212,9 @@ function ChatAppContent() {
                             <input
                                 ref={fileInputRef}
                                 type="file"
-                                accept="image/*"
+                                accept="image/*,video/*,application/*,text/*"
                                 hidden
-                                onChange={handleImageChange}
+                                onChange={handleFileChange}
                             />
 
                             {/* Emoji picker popup */}
@@ -213,8 +229,8 @@ function ChatAppContent() {
                                     <FontAwesomeIcon
                                         className={`toolbar-icon ${uploading ? "toolbar-icon--disabled" : ""}`}
                                         icon={faImage}
-                                        onClick={uploading ? undefined : handlePickImage}
-                                        title="Gửi ảnh"
+                                        onClick={uploading ? undefined : handlePickAttachment}
+                                        title="Gửi ảnh / video / file"
                                     />
                                     {uploading && (
                                         <span className="upload-progress">{Math.round(uploadProgress)}%</span>
@@ -263,17 +279,26 @@ function ChatAppContent() {
             {showUploadModal && pendingFile && (
                 <div className="modal-overlay">
                     <div className="modal upload-modal">
-                        <h3>Gửi ảnh?</h3>
+                        <h3>Gửi tệp?</h3>
 
                         <div className="upload-preview">
-                            <img src={previewUrl} alt="preview"/>
+                            {getKind(pendingFile) === "image" && previewUrl && (
+                                <img src={previewUrl} alt="preview" />
+                            )}
+
+                            {getKind(pendingFile) === "video" && previewUrl && (
+                                <video src={previewUrl} controls style={{ maxWidth: 320, width: "100%", borderRadius: 12 }} />
+                            )}
+                            {getKind(pendingFile) === "file" && (
+                                <div style={{ padding: 12 }}>Không có preview cho file này.</div>
+                            )}
                         </div>
 
                         <div className="upload-file-name">{pendingFile.name}</div>
 
                         <div className="modal-actions">
                             <button onClick={closeUploadModal}>Hủy</button>
-                            <button className="primary" onClick={confirmSendImage}>
+                            <button className="primary" onClick={confirmSendAttachment}>
                                 Gửi
                             </button>
                         </div>

@@ -4,7 +4,7 @@ export type CloudinaryUploadResponse = {
     error?: { message?: string };
 };
 
-export const uploadImageToCloudinary = (file: File, onProgress: (p: number) => void) => {
+export const uploadFileToCloudinary = (file: File, onProgress: (p: number) => void) => {
     const cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
     const preset = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
 
@@ -12,7 +12,7 @@ export const uploadImageToCloudinary = (file: File, onProgress: (p: number) => v
         return Promise.reject(new Error("Thiếu Cloudinary config trong .env (CLOUD_NAME / UPLOAD_PRESET)."));
     }
 
-    const endpoint = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+    const endpoint = `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`;
     const form = new FormData();
     form.append("file", file);
     form.append("upload_preset", preset);
@@ -38,3 +38,5 @@ export const uploadImageToCloudinary = (file: File, onProgress: (p: number) => v
         xhr.send(form);
     });
 };
+export const uploadImageToCloudinary = (file: File, onProgress: (p: number) => void) =>
+    uploadFileToCloudinary(file, onProgress);
