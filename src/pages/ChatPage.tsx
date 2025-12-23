@@ -13,6 +13,7 @@ import {createRoomApi} from "../services/chatService";
 import {uploadImageToCloudinary} from "../services/cloudinaryUpload";
 import EmojiPicker, {EmojiClickData} from "emoji-picker-react";
 
+
 interface Room {
     id: number;
     name: string;
