@@ -110,3 +110,29 @@ export function createRoomApi(name: string) {
         socket.addEventListener("open", send, { once: true });
     }
 }
+export function joinRoomApi(name: string) {
+    const socket = getSocket();
+    if (!socket) {
+        console.error("WebSocket chưa sẵn sàng");
+        return;
+    }
+
+    const send = () => {
+        socket.send(
+            JSON.stringify({
+                action: "onchat",
+                data: {
+                    event: "JOIN_ROOM",
+                    data: { name },
+                },
+            })
+        );
+    };
+
+    if (socket.readyState === WebSocket.OPEN) {
+        send();
+    } else {
+        socket.addEventListener("open", send, { once: true });
+    }
+}
+

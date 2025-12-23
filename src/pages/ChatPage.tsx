@@ -9,7 +9,7 @@ import ConversationItem from "../components/conversations/ConversationItem";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {ChangeEvent, useEffect, useRef, useState} from "react";
 import {faIcons, faImage, faPaperPlane, faPlus, faCircle,faVideo, faPaperclip, faFaceSmileBeam} from "@fortawesome/free-solid-svg-icons";
-import {createRoomApi} from "../services/chatService";
+import {createRoomApi, joinRoomApi} from "../services/chatService";
 import {uploadFileToCloudinary} from "../services/cloudinaryUpload";
 import EmojiPicker, {EmojiClickData} from "emoji-picker-react";
 import { useChatPersistence } from "../hooks/useChatPersistence";
@@ -40,9 +40,14 @@ function ChatAppContent() {
     const handlePickFile  = () => fileInputRef.current?.click();
 
 
-    /* ===== CREATE ROOM STATE ===== */
+    /*CREATE ROOM STATE*/
     const [showCreateRoom, setShowCreateRoom] = useState(false);
     const [roomName, setRoomName] = useState("");
+
+    /* JOIN ROOM STATE*/
+    const [showJoinRoom, setShowJoinRoom] = useState(false);
+    const [joinRoomName, setJoinRoomName] = useState("");
+
 
     /* ===== EMOJI PICKER ===== */
     const [showEmoji, setShowEmoji] = useState(false);
@@ -91,6 +96,25 @@ function ChatAppContent() {
         setRoomName("");
         setShowCreateRoom(false);
     };
+    const handleJoinRoom = () => {
+        const roomNameInput = joinRoomName.trim();
+
+        if (!roomNameInput) {
+            alert("Vui lòng nhập tên phòng");
+            return;
+        }
+        const found = conversations.find(
+            (c) => c.name === roomNameInput
+        );
+        if (!found) {
+            alert("Nhóm không tồn tại");
+            return;
+        }
+        joinRoomApi(roomNameInput);
+        selectConversation(roomNameInput, 1);
+        setShowJoinRoom(false);
+        setJoinRoomName("");
+    }
 
     useEffect(() => {
         const handleCreateRoomSuccess = (e: any) => {
@@ -100,6 +124,16 @@ function ChatAppContent() {
 
         window.addEventListener("CREATE_ROOM_SUCCESS", handleCreateRoomSuccess);
         return () => window.removeEventListener("CREATE_ROOM_SUCCESS", handleCreateRoomSuccess);
+    }, []);
+
+    useEffect(() => {
+        const handleJoinRoomSuccess = (e: any) => {
+            console.log("JOIN_ROOM_SUCCESS:", e.detail);
+        };
+
+        window.addEventListener("JOIN_ROOM_SUCCESS", handleJoinRoomSuccess);
+        return () =>
+            window.removeEventListener("JOIN_ROOM_SUCCESS", handleJoinRoomSuccess);
     }, []);
 
     const closeUploadModal = () => {
@@ -180,12 +214,28 @@ function ChatAppContent() {
                             </h2>
                             <div className="sidebar__search">
                                 <input className="sidebar__search-inp" type="text" placeholder="Tìm kiếm"/>
-                                <div className="create-room-wrap">
-                                    <button className="create-room-btn" onClick={() => setShowCreateRoom(true)}>
-                                        <FontAwesomeIcon icon={faPlus}/>
-                                    </button>
-                                    <span className="create-room-text">Tạo nhóm</span>
+                                <div className="room-action-row">
+                                    <div
+                                        className="room-action-item"
+                                        onClick={() => setShowCreateRoom(true)}
+                                    >
+                                        <button className="create-room-btn">
+                                            <FontAwesomeIcon icon={faPlus}/>
+                                        </button>
+                                        <span className="create-room-text">Tạo nhóm</span>
+                                    </div>
+
+                                    <div
+                                        className="room-action-item"
+                                        onClick={() => setShowJoinRoom(true)}
+                                    >
+                                        <button className="create-room-btn">
+                                            <FontAwesomeIcon icon={faPlus}/>
+                                        </button>
+                                        <span className="create-room-text">Tham gia nhóm</span>
+                                    </div>
                                 </div>
+
                             </div>
                         </div>
 
@@ -348,7 +398,32 @@ function ChatAppContent() {
                 </div>
             )}
 
-            {/* CREATE ROOM MODAL */}
+            {showJoinRoom && (
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <h3>Tham gia phòng chat</h3>
+
+                        <input
+                            type="text"
+                            placeholder="Nhập tên phòng..."
+                            value={joinRoomName}
+                            onChange={(e) => setJoinRoomName(e.target.value)}
+                        />
+
+                        <div className="modal-actions">
+                            <button onClick={() => setShowJoinRoom(false)}>
+                                Hủy
+                            </button>
+
+                            <button
+                                className="primary" onClick={handleJoinRoom}>
+                                Tham gia
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {showCreateRoom && (
                 <div className="modal-overlay">
                     <div className="modal">
@@ -371,6 +446,7 @@ function ChatAppContent() {
         </div>
     );
 }
+
 export default function App() {
     return (
         <MessageProvider>

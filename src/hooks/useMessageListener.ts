@@ -60,6 +60,19 @@ export function useMessageListener() {
                     alert(data.message || "Tạo nhóm thất bại");
                 }
             }
+
+                if (data.event === "JOIN_ROOM") {
+                    if (data.status === "success") {
+                        window.dispatchEvent(
+                            new CustomEvent("JOIN_ROOM_SUCCESS", {
+                                detail: data.data,
+                            })
+                        );
+                    } else {
+                        alert(data.message || "Join room thất bại");
+                    }
+                }
+
         };
 
         socket.addEventListener("message", handleMessage);
