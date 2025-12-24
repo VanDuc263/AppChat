@@ -184,10 +184,9 @@
     border: 1px solid #e0e0e0;
     border-radius: 30px;
     padding: 5px 20px;
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15); 
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
     transition: all 0.3s ease;
 }
-
 
 .bottom__message:focus-within {
     border-color: #cbacce;
@@ -342,4 +341,70 @@
     color: #444;
     margin-bottom: 14px;
     word-break: break-word;
+}
+.sticker-picker-popup {
+    position: absolute;
+    bottom: 65px;
+    left: 56px;
+    z-index: 9999;
+
+    width: 340px;
+    max-height: 280px;
+    overflow: auto;
+
+    background: #fff;
+    border: 1px solid rgba(0,0,0,0.12);
+    border-radius: 14px;
+    padding: 10px;
+    box-shadow: 0 10px 26px rgba(0,0,0,0.18);
+}
+
+.sticker-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.sticker-tab {
+    border: none;
+    background: #f1f3f5;
+    padding: 8px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.sticker-tab.active {
+    background: #e9d5ff;
+}
+
+.sticker-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+}
+
+.sticker-item {
+    border: none;
+    background: transparent;
+    padding: 6px;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+.sticker-item:hover {
+    background: rgba(0,0,0,0.06);
+}
+
+.sticker-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.sticker-empty {
+    grid-column: 1 / -1;
+    padding: 10px;
+    font-size: 13px;
+    opacity: 0.7;
 }
