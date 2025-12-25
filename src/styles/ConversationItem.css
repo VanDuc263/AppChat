@@ -1,3 +1,15 @@
+.conversations {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    background: var(--bg-main);
+    padding: 8px 0;
+
+    overflow-y: auto;
+}
+
 .conversation__item {
     display: flex;
     align-items: center;
@@ -8,20 +20,38 @@
     transition: all 0.25s ease;
     position: relative;
     box-sizing: border-box;
-
-
-    background: #e6e6e6;
+    background: var(--bg-card);
     border-left: 4px solid transparent;
+    color: var(--text-main);
+    /*background: #e6e6e6;*/
+    border-left: 4px solid transparent;
+}
+/* LIGHT  */
+:root[data-theme="light"] .conversation__item {
+    background: #e6e6e6;
+}
+
+/* DARK */
+:root[data-theme="dark"] .conversation__item {
+    background: var(--bg-card);
 }
 
 .conversation__item:hover:not(.active) {
-    background-color: #dedede;
+    /*background-color: #dedede;*/
+    background-color: rgba(0, 0, 0, 0.05);
+}
+:root[data-theme="dark"] .conversation__item:hover:not(.active) {
+    background-color: rgba(255, 255, 255, 0.06);
 }
 
 .conversation__item.active {
-    background: #cec1d1;
+    /*background: #cec1d1;*/
+    background: rgba(118, 75, 162, 0.18);
     border-left-color: #764ba2;
     box-shadow: 0 2px 8px rgba(118, 75, 162, 0.15);
+}
+:root[data-theme="dark"] .conversation__item.active {
+    background: rgba(124, 58, 237, 0.28);
 }
 
 .conversation-avatar-wrapper {
@@ -48,7 +78,8 @@
     right: 2px;
     font-size: 14px;
     color: #4ade80;
-    background: white;
+    /*background: white;*/
+    background: var(--bg-card);
     border-radius: 50%;
     padding: 2px;
 }
@@ -62,7 +93,8 @@
 .conversation-name {
     font-size: 1.6rem;
     font-weight: 600;
-    color: #1a1a1a;
+    /*color: #1a1a1a;*/
+    color: var(--text-main);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -70,7 +102,8 @@
 
 .conversation-status {
     font-size: 1.35rem;
-    color: #666;
+    /*color: #666;*/
+    color: var(--text-sub);
     display: flex;
     align-items: center;
     gap: 6px;

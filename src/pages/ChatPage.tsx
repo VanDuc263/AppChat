@@ -252,15 +252,18 @@ function ChatAppContent() {
                     {/* Sidebar */}
                     <div className="sidebar">
                         <div className="sidebar__head">
-                            <h2 className="sidebar__title">
-                                Tin nhắn - <span>{user?.username}</span>
-                            </h2>
-                            <FontAwesomeIcon
-                                icon={theme === "light" ? faMoon : faSun}
-                                onClick={toggleTheme}
-                                className="theme-toggle-icon"
-                                title="Đổi giao diện"
-                            />
+                            <div className="sidebar__title-row">
+                                <h2 className="sidebar__title">
+                                    Tin nhắn - <span>{user?.username}</span>
+                                </h2>
+
+                                <FontAwesomeIcon
+                                    icon={theme === "dark" ? faSun : faMoon}
+                                    onClick={toggleTheme}
+                                    className="theme-toggle-icon"
+                                    title="Đổi giao diện"
+                                />
+                            </div>
                             <div className="sidebar__search">
                                 <input className="sidebar__search-inp" type="text" placeholder="Tìm kiếm"/>
                                 <div className="room-action-row">
