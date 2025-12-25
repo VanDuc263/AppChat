@@ -11,7 +11,7 @@ const VIDEO_PREFIX = "__VID__:";
 const FILE_PREFIX = "__FILE__:";
 const STICKER_PREFIX = "__STK__:";
 
-const stickerCtx = (require as any).context("../../stickers", false, /\.png$/i);
+const stickerCtx = (require as any).context("../../assets/img/stickers", false, /\.png$/i);
 const stickerSrc = (key: string) => {
     const k = key.startsWith("./") ? key : `./${key}`;
     try {

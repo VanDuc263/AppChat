@@ -135,4 +135,28 @@ export function joinRoomApi(name: string) {
         socket.addEventListener("open", send, { once: true });
     }
 }
+export function checkUserExistApi(user : string) {
+    const socket = getSocket();
+    if (!socket) return;
 
+    console.log(user)
+    const sendCheckUserExist = () => {
+        socket.send(
+            JSON.stringify({
+                action: "onchat",
+                data: {
+                    event: "CHECK_USER_EXIST",
+                    data: {
+                        user: user,
+                    },
+                },
+            })
+        );
+    };
+
+    if (socket.readyState === WebSocket.OPEN) {
+        sendCheckUserExist();
+    } else {
+        socket.addEventListener("open", sendCheckUserExist, { once: true });
+    }
+}
