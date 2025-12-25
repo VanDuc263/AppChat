@@ -75,16 +75,16 @@ function getRoomMessages(roomName: string, page: number) {
             }
 
         }
-        //     action : "onchat",
-        //     data : {
-        //         event : "SEND_CHAT",
-        //         data : {
-        //             type : "room",
-        //             // to : "22131@st.hcmuaf.edu.vn",
-        //             to : "Nhom_10",
-        //             mes : "test --- hihihi"
-        //         }
-        //     }
+            // action : "onchat",
+            // data : {
+            //     event : "SEND_CHAT",
+            //     data : {
+            //         type : "room",
+            //         // to : "22131@st.hcmuaf.edu.vn",
+            //         to : "Nhom_10",
+            //         mes : "test --- hihihi"
+            //     }
+            // }
     }
     ));
 }
@@ -110,7 +110,7 @@ socket.addEventListener("message", (event) => {
     }
 
     // Nhận tin nhắn room
-    if (res.event === "GET_ROOM_CHAT_MES") {
+    if (res.event === "GET_ROOM_CHAT_MES" || res.event === "SEND_CHAT") {
         console.log("💬 Room messages:", res.data);
     }
 });

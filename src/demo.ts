@@ -59,12 +59,19 @@ function getMessages(targetUser: string, page: number) {
             //         mes : "test --- hihihi"
             //     }
             // }
+            // action: "onchat",
+            // data: {
+            //     event: "GET_ROOM_CHAT_MES",
+            //     data: {
+            //         name: "Nhom_10",
+            //         page:1
+            //     }
+            // }
             action: "onchat",
             data: {
-                event: "GET_ROOM_CHAT_MES",
+                event: "CHECK_USER_EXIST",
                 data: {
-                    name: "Nhom_110",
-                    page:1
+                    user: "long"
                 }
             }
             //     action: "onchat",

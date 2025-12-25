@@ -5,7 +5,7 @@ import { reLoginApi } from "../services/authService";
 import { getConversationApi } from "../services/chatService";
 
 const MAX_RETRY = 2;
-const RETRY_DELAY = 3000;
+const RETRY_DELAY = 8000;
 const SOCKET_TIMEOUT = 10000;
 
 function waitForSocketOpen(socket: WebSocket): Promise<void> {

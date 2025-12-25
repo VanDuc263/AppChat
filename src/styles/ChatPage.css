@@ -41,29 +41,6 @@
 }
 
 
-.sidebar__search-inp {
-    width: 100%;
-    background-color: #eef0f5;
-    border: 1px solid #c8d1e0;
-    border-radius: 24px;
-    height: 44px;
-    padding: 0 20px;
-    font-size: 1.5rem;
-    outline: none;
-    transition: all 0.2s;
-}
-
-
-.sidebar__search-inp:focus {
-    border-color: #cbacce;
-    box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.25);
-}
-
-
-.sidebar__search-inp::placeholder {
-    color: #777;
-}
-
 
 .sidebar__bottom {
     flex: 1;

@@ -13,7 +13,7 @@ import {createRoomApi, joinRoomApi} from "../services/chatService";
 import {uploadFileToCloudinary} from "../services/cloudinaryUpload";
 import EmojiPicker, {EmojiClickData} from "emoji-picker-react";
 import { useChatPersistence } from "../hooks/useChatPersistence";
-
+import SearchButton from "../components/buttons/SearchButton";
 
 interface Room {
     id: number;
@@ -68,7 +68,7 @@ function ChatAppContent() {
     const [showSticker, setShowSticker] = useState(false);
     const stickerWrapRef = useRef<HTMLDivElement | null>(null);
     const [stickerTab, setStickerTab] = useState<"recent" | "all">("all");
-    const stickerCtx = (require as any).context("../stickers", false, /\.png$/i);
+    const stickerCtx = (require as any).context("../assets/img/stickers", false, /\.png$/i);
     const ALL_STICKER_KEYS: string[] = stickerCtx.keys().sort();
 
     const [recentStickerKeys, setRecentStickerKeys] = useState<string[]>(() => {
@@ -252,7 +252,10 @@ function ChatAppContent() {
                                 Tin nhắn - <span>{user?.username}</span>
                             </h2>
                             <div className="sidebar__search">
-                                <input className="sidebar__search-inp" type="text" placeholder="Tìm kiếm"/>
+
+                                {/*input search*/}
+                                <SearchButton/>
+
                                 <div className="room-action-row">
                                     <div
                                         className="room-action-item"
