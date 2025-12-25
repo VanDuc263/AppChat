@@ -1,5 +1,6 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import {createContext, useContext, useState, ReactNode, useRef} from "react";
 import { sendMessageApi, getMessageApi } from "../services/chatService";
+import {checkUserExistApi} from "../services/chatService";
 
 export interface Message {
     id: number;
@@ -14,7 +15,10 @@ export interface Conversation {
     type: number;
     actionTime: string;
 }
-
+type SearchState = {
+    loadding : boolean
+    result : boolean | null;
+}
 interface MessageContextType {
     conversations: Conversation[];
     messages: Message[];
@@ -31,6 +35,12 @@ interface MessageContextType {
     replaceConversations: (conversations: Conversation[]) => void;
 
     selectConversation: (username: string, page?: number) => void;
+
+    searchUser : (username : string) => void;
+
+    searchState : SearchState;
+    onSearchResult : (status : boolean) => void;
+    resetSearch : () => void;
 }
 
 const MessageContext = createContext<MessageContextType | null>(null);
@@ -40,6 +50,8 @@ export function MessageProvider({ children }: { children: ReactNode }) {
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [page, setPage] = useState(1);
     const [currentConversation, setCurrentConversation] = useState<string | null>(null);
+    const [searchState,setSearchState] = useState<SearchState>({loadding : false,result : null})
+    const currentUsernameSearchRef = useRef("");
 
     // ========= ACTIONS =========
 
@@ -90,7 +102,33 @@ export function MessageProvider({ children }: { children: ReactNode }) {
         setMessages([]); // messages sẽ do persistence hook load
         getMessageApi(name, pageParam);
     };
+    const searchUser = (username : string) =>{
+        currentUsernameSearchRef.current = username
+        if(!username.trim()) return
+        setSearchState({
+            loadding : true,
+            result : null
+        })
 
+        checkUserExistApi(username)
+    }
+    const onSearchResult = (status : boolean) =>{
+
+        setSearchState({
+            loadding : false,
+            result : status,
+        })
+        if(status){
+            selectConversation(currentUsernameSearchRef.current,1)
+        }
+
+    }
+    const resetSearch = () => {
+        setSearchState({
+            loading: false,
+            result: null,
+        });
+    };
     return (
         <MessageContext.Provider
             value={{
@@ -107,6 +145,11 @@ export function MessageProvider({ children }: { children: ReactNode }) {
                 replaceMessages,
                 replaceConversations,
                 selectConversation,
+
+                searchUser,
+                searchState,
+                onSearchResult,
+                resetSearch,
             }}
         >
             {children}
