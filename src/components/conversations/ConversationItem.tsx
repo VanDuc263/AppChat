@@ -1,7 +1,6 @@
-import logo from "../../assets/img/logo_nlu.png";
+import groupAvatar from "../../assets/img/group-avatar.png";
+import userAvatar from "../../assets/img/user-avatar.png";
 import "../../styles/ConversationItem.css";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faCircle} from "@fortawesome/free-solid-svg-icons";
 
 
 interface ConversationItemProps {
@@ -21,7 +20,6 @@ export default function ConversationItem({
                                             type,
                                             actionTime,
                                              status = "Hoạt động 3 phút trước",
-                                             avatar = logo,
                                              isActive = false,
                                              isUnread = false,
                                              onClick
@@ -66,7 +64,8 @@ export default function ConversationItem({
             <div className="conversation-avatar-wrapper">
                 <img
                     className="conversation-img"
-                    src={avatar}
+                    src={type === 0 ? userAvatar : groupAvatar}
+
                     alt={`Avatar của ${name}`}
                 />
             </div>
