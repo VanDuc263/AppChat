@@ -6,6 +6,7 @@
     gap: 8px;
     overflow-y: auto;
     background: #f1ebf7;
+    position: relative;
 }
 
 .message-group {
@@ -109,4 +110,30 @@
     height: auto;
     display: block;
     background: transparent;
+}
+
+.messages--scroll-bottom{
+    content : "";
+    justify-content: flex-end;
+    position: fixed;
+    bottom: 180px;
+    right: 99px;
+    z-index: 999;
+    display: none;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+}
+.scroll-bottom__icon{
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background-color: #c5c5c5;
+    color: white;
+    border: none;
+    box-shadow: 0 1px 4px 1px rgba(0,0,0,0.1);
+
+}
+.messages--scroll-bottom:hover{
+    cursor: pointer;
+    transform: scale(1.15);
 }
