@@ -7,6 +7,17 @@
     overflow-y: auto;
     background: #f1ebf7;
     position: relative;
+    /*background: #f1ebf7;*/
+    background: var(--bg-main);
+}
+/* LIGHT  */
+:root[data-theme="light"] .messages {
+    background: #f3edf8;
+}
+
+/* DARK */
+:root[data-theme="dark"] .messages {
+    background: var(--bg-main);
 }
 
 .message-group {
@@ -25,7 +36,8 @@
 
 .sender {
     font-size: 1.3rem;
-    color: #555;
+    /*color: #555;*/
+    color: var(--text-sub);
     margin-bottom: 8px;
     padding-left: 12px;
     font-weight: 600;
@@ -45,14 +57,18 @@
 }
 
 .message-group.other .message-bubble {
-    background-color: #f1f3f4;
-    color: #1a1a1a;
+    /*background-color: #f1f3f4;*/
+    /*color: #1a1a1a;*/
+    background-color: var(--bg-card);
+    color: var(--text-main);
     border-bottom-left-radius: 4px;
 }
 
 .message-group.me .message-bubble {
-    background-color: #cbacce;
-    color: white;
+    /*background-color: #cbacce;*/
+    /*color: white;*/
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #ffffff;
 }
 
 .message-group.me .message-bubble::after {
@@ -63,11 +79,24 @@
     width: 0;
     height: 0;
     border: 10px solid transparent;
-    border-left-color: #cbacce;
-    border-bottom-color: #cbacce;
+    /*border-left-color: #cbacce;*/
+    /*border-bottom-color: #cbacce;*/
+    border-left-color: #764ba2;
+    border-bottom-color: #764ba2;
     transform: rotate(25deg);
     transform-origin: bottom left;
 }
+/* LIGHT */
+:root[data-theme="light"] .message-group.me .message-bubble {
+    background-color: #cbacce;
+    color: #fff;
+}
+
+/* DARK */
+:root[data-theme="dark"] .message-group.me .message-bubble {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+}
+
 
 .message-group.other .message-bubble::after {
     content: '';
@@ -77,8 +106,10 @@
     width: 0;
     height: 0;
     border: 10px solid transparent;
-    border-right-color: #f1f3f4;
-    border-bottom-color: #f1f3f4;
+    /*border-right-color: #f1f3f4;*/
+    /*border-bottom-color: #f1f3f4;*/
+    border-right-color: var(--bg-card);
+    border-bottom-color: var(--bg-card);
     transform: rotate(-25deg);
     transform-origin: bottom right;
 }
@@ -86,6 +117,18 @@
 .message-group .message-bubble:first-child {
     margin-top: 0;
 }
+/* LIGHT */
+:root[data-theme="light"] .message-group.other .message-bubble {
+    background: #f1f3f4;
+    color: #1a1a1a;
+}
+
+/* DARK */
+:root[data-theme="dark"] .message-group.other .message-bubble {
+    background: var(--bg-card);
+    color: var(--text-main);
+}
+
 
 .sticker-pack{
     display: flex;
@@ -137,3 +180,7 @@
     cursor: pointer;
     transform: scale(1.15);
 }
+:root[data-theme="dark"] .message-group.me .message-bubble {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+}
+

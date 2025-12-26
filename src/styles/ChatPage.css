@@ -1,31 +1,43 @@
 .container {
     display: flex;
     height: calc(100vh - 60px);
-    background-color: #d6dce5;
+    /*background-color: #d6dce5;*/
+    background-color: var(--bg-main);
+}
+.sidebar__title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
 }
 
 
 .sidebar {
     width: 380px;
-    background: #ffffff;
+    /*background: #ffffff;*/
+    /*border-right: 2px solid #c8d1e0;*/
+    background: var(--bg-card);
+    border-right: 2px solid var(--border-color);
     display: flex;
     flex-direction: column;
-    border-right: 2px solid #c8d1e0;
     box-shadow: 4px 0 16px rgba(0, 0, 0, 0.1);
 }
 
 
 .sidebar__head {
     padding: 20px 16px;
-    background: #f8f9fc;
-    border-bottom: 2px solid #c8d1e0;
+    /*background: #f8f9fc;*/
+    /*border-bottom: 2px solid #c8d1e0;*/
+    background: var(--bg-card);
+    border-bottom: 2px solid var(--border-color);
 }
 
 
 .sidebar__title {
     font-size: 2.1rem;
     font-weight: 700;
-    color: #1a1a1a;
+    /*color: #1a1a1a;*/
+    color: var(--text-main);
     margin-bottom: 16px;
 }
 
@@ -40,6 +52,33 @@
     display: inline-block;
 }
 
+
+.sidebar__search-inp {
+    width: 100%;
+    /*background-color: #eef0f5;*/
+    /*border: 1px solid #c8d1e0;*/
+    background-color: var(--bg-main);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    border-radius: 24px;
+    height: 44px;
+    padding: 0 20px;
+    font-size: 1.5rem;
+    outline: none;
+    transition: all 0.2s;
+}
+.sidebar__search-inp::placeholder {
+    color: var(--text-sub);
+}
+.sidebar__search-inp:focus {
+    border-color: #cbacce;
+    box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.25);
+}
+
+
+.sidebar__search-inp::placeholder {
+    color: #777;
+}
 
 
 .sidebar__bottom {
@@ -103,15 +142,18 @@
 }
 .content {
     flex: 1;
-    background: #e5e9f0;
+    /*background: #e5e9f0;*/
+    background: var(--bg-main);
     display: flex;
     flex-direction: column;
 }
-
-
 .content-head {
     padding: 16px 24px;
-    background: #ffffff;
+    /*background: #ffffff;*/
+    /*color: #1a1a1a;*/
+    background: var(--bg-card);
+    color: var(--text-main);
+    border-bottom: 1px solid var(--border-color);
     border-bottom: 1px solid #ddd;
     font-size: 1.95rem;
     font-weight: 700;
@@ -127,6 +169,11 @@
     padding: 16px 20px 24px;
     box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.12);
 }
+:root[data-theme="dark"] .content-bottom {
+    background: rgba(2, 6, 23, 0.92); /* dark glass */
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.6);
+}
 
 
 .bottom-toolbar {
@@ -138,7 +185,8 @@
 
 
 .toolbar-icon {
-    color: #65676b;
+    /*color: #65676b;*/
+    color: var(--text-sub);
     font-size: 2.4rem;
     cursor: pointer;
     padding: 9px;
@@ -157,8 +205,10 @@
     display: flex;
     align-items: center;
     gap: 16px;
-    background-color: #ffffff;
-    border: 1px solid #e0e0e0;
+    /*background-color: #ffffff;*/
+    /*border: 1px solid #e0e0e0;*/
+    background-color: var(--bg-card);
+    border: 1px solid var(--border-color);
     border-radius: 30px;
     padding: 5px 20px;
     box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
@@ -178,12 +228,14 @@
     outline: none;
     background: transparent;
     font-size: 1.55rem;
-    color: #1a1a1a;
+    /*color: #1a1a1a;*/
+    color: var(--text-main);
 }
 
 
 .send-mes-inp::placeholder {
-    color: #aaa;
+    /*color: #aaa;*/
+    color: var(--text-sub);
 }
 
 
@@ -218,7 +270,9 @@
 
 .modal {
     width: 360px;
-    background: #ffffff;
+    /*background: #ffffff;*/
+    background: var(--bg-card);
+    color: var(--text-main);
     border-radius: 16px;
     padding: 24px;
     box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
@@ -391,4 +445,32 @@
     padding: 10px;
     font-size: 13px;
     opacity: 0.7;
+}
+/*THEME DARK/LIGHT*/
+/* LIGHT THEME */
+:root[data-theme="light"] {
+    --bg-main: #f5f7fb;
+    --bg-card: #ffffff;
+    --text-main: #1f2937;
+    --text-sub: #6b7280;
+    --border-color: #e5e7eb;
+}
+/* DARK THEME */
+:root[data-theme="dark"] {
+    --bg-main: #0f172a;
+    --bg-card: #1e293b;
+    --text-main: #e5e7eb;
+    --text-sub: #9ca3af;
+    --border-color: #334155;
+}
+/* STYLE TOGGLE*/
+.theme-toggle-icon {
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--text-main);
+    transition: transform 0.2s ease;
+}
+
+.theme-toggle-icon:hover {
+    transform: rotate(20deg);
 }

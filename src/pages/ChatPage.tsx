@@ -8,11 +8,13 @@ import "../styles/base.css";
 import ConversationItem from "../components/conversations/ConversationItem";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {ChangeEvent, useEffect, useRef, useState} from "react";
-import {faIcons, faImage, faPaperPlane, faPlus, faCircle,faVideo, faPaperclip, faFaceSmileBeam} from "@fortawesome/free-solid-svg-icons";
+import {faIcons, faImage, faPaperPlane, faPlus, faCircle,faVideo, faPaperclip, faFaceSmileBeam,faMoon, faSun} from "@fortawesome/free-solid-svg-icons";
 import {createRoomApi, joinRoomApi} from "../services/chatService";
 import {uploadFileToCloudinary} from "../services/cloudinaryUpload";
 import EmojiPicker, {EmojiClickData} from "emoji-picker-react";
 import { useChatPersistence } from "../hooks/useChatPersistence";
+import { useTheme } from "../contexts/ThemeContext";
+
 import SearchButton from "../components/buttons/SearchButton";
 
 interface Room {
@@ -52,6 +54,9 @@ function ChatAppContent() {
     /* ===== EMOJI PICKER ===== */
     const [showEmoji, setShowEmoji] = useState(false);
     const emojiWrapRef = useRef<HTMLDivElement | null>(null);
+
+    /* ===== THEME DARK/LIGHT ===== */
+    const { theme, toggleTheme } = useTheme();
 
     const IMAGE_PREFIX = "__IMG__:";
     const VIDEO_PREFIX = "__VID__:";
@@ -249,9 +254,18 @@ function ChatAppContent() {
                     {/* Sidebar */}
                     <div className="sidebar">
                         <div className="sidebar__head">
-                            <h2 className="sidebar__title">
-                                Tin nhắn - <span>{user?.username}</span>
-                            </h2>
+                            <div className="sidebar__title-row">
+                                <h2 className="sidebar__title">
+                                    Tin nhắn - <span>{user?.username}</span>
+                                </h2>
+
+                                <FontAwesomeIcon
+                                    icon={theme === "dark" ? faSun : faMoon}
+                                    onClick={toggleTheme}
+                                    className="theme-toggle-icon"
+                                    title="Đổi giao diện"
+                                />
+                            </div>
                             <div className="sidebar__search">
 
                                 {/*input search*/}
