@@ -160,3 +160,28 @@ export function checkUserExistApi(user : string) {
         socket.addEventListener("open", sendCheckUserExist, { once: true });
     }
 }
+export function checkUserOnlineApi(user : string) {
+    const socket = getSocket();
+    if (!socket) return;
+
+    console.log(user)
+    const sendCheckUserOnline = () => {
+        socket.send(
+            JSON.stringify({
+                action: "onchat",
+                data: {
+                    event: "CHECK_USER_ONLINE",
+                    data: {
+                        user: user,
+                    },
+                },
+            })
+        );
+    };
+
+    if (socket.readyState === WebSocket.OPEN) {
+        sendCheckUserOnline();
+    } else {
+        socket.addEventListener("open", sendCheckUserOnline, { once: true });
+    }
+}

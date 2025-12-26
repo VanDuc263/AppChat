@@ -12,7 +12,7 @@ const safeDecode = (s: any) => {
 };
 
 export function useMessageListener() {
-    const { addMessage, replaceMessages, replaceConversations,handleMessageResponse } = useMessage();
+    const { addMessage, replaceMessages, replaceConversations,handleMessageResponse,setCurrentOnline } = useMessage();
 
     useEffect(() => {
         const socket = getSocket();
@@ -38,7 +38,10 @@ export function useMessageListener() {
                 const list = Array.isArray(data.data) ? data.data : [];
                 replaceConversations(list);
             }
-
+            if(data.event === "CHECK_USER_ONLINE" && data.status === "success"){
+                const res = data.data.status
+                setCurrentOnline(res)
+            }
             if (data.event === "SEND_CHAT") {
                 addMessage({
                     id: Date.now(),
