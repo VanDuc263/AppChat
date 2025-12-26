@@ -1,7 +1,6 @@
 .container {
     display: flex;
     height: calc(100vh - 60px);
-    /*background-color: #d6dce5;*/
     background-color: var(--bg-main);
 }
 .sidebar__title-row {
@@ -14,8 +13,6 @@
 
 .sidebar {
     width: 380px;
-    /*background: #ffffff;*/
-    /*border-right: 2px solid #c8d1e0;*/
     background: var(--bg-card);
     border-right: 2px solid var(--border-color);
     display: flex;
@@ -26,8 +23,6 @@
 
 .sidebar__head {
     padding: 20px 16px;
-    /*background: #f8f9fc;*/
-    /*border-bottom: 2px solid #c8d1e0;*/
     background: var(--bg-card);
     border-bottom: 2px solid var(--border-color);
 }
@@ -36,7 +31,6 @@
 .sidebar__title {
     font-size: 2.1rem;
     font-weight: 700;
-    /*color: #1a1a1a;*/
     color: var(--text-main);
     margin-bottom: 16px;
 }
@@ -55,8 +49,6 @@
 
 .sidebar__search-inp {
     width: 100%;
-    /*background-color: #eef0f5;*/
-    /*border: 1px solid #c8d1e0;*/
     background-color: var(--bg-main);
     border: 1px solid var(--border-color);
     color: var(--text-main);
@@ -96,7 +88,7 @@
 
 .room-action-item {
     display: flex;
-    flex-direction: column; /* icon trên - chữ dưới */
+    flex-direction: column;
     align-items: center;
     gap: 6px;
     cursor: pointer;
@@ -142,15 +134,12 @@
 }
 .content {
     flex: 1;
-    /*background: #e5e9f0;*/
     background: var(--bg-main);
     display: flex;
     flex-direction: column;
 }
 .content-head {
     padding: 16px 24px;
-    /*background: #ffffff;*/
-    /*color: #1a1a1a;*/
     background: var(--bg-card);
     color: var(--text-main);
     border-bottom: 1px solid var(--border-color);
@@ -158,7 +147,7 @@
     font-size: 1.95rem;
     font-weight: 700;
     color: #1a1a1a;
-    display: flex;
+    display: flow;
     align-items: center;
 }
 
@@ -170,7 +159,7 @@
     box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.12);
 }
 :root[data-theme="dark"] .content-bottom {
-    background: rgba(2, 6, 23, 0.92); /* dark glass */
+    background: rgba(2, 6, 23, 0.92);
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.6);
 }
@@ -185,7 +174,6 @@
 
 
 .toolbar-icon {
-    /*color: #65676b;*/
     color: var(--text-sub);
     font-size: 2.4rem;
     cursor: pointer;
@@ -205,8 +193,6 @@
     display: flex;
     align-items: center;
     gap: 16px;
-    /*background-color: #ffffff;*/
-    /*border: 1px solid #e0e0e0;*/
     background-color: var(--bg-card);
     border: 1px solid var(--border-color);
     border-radius: 30px;
@@ -228,13 +214,11 @@
     outline: none;
     background: transparent;
     font-size: 1.55rem;
-    /*color: #1a1a1a;*/
     color: var(--text-main);
 }
 
 
 .send-mes-inp::placeholder {
-    /*color: #aaa;*/
     color: var(--text-sub);
 }
 
@@ -270,7 +254,6 @@
 
 .modal {
     width: 360px;
-    /*background: #ffffff;*/
     background: var(--bg-card);
     color: var(--text-main);
     border-radius: 16px;
@@ -314,9 +297,9 @@
 
 .user-status{
     font-size: 14px;
-    background: white;
     border-radius: 50%;
-    padding: 2px;
+    padding: 1px;
+    margin-left: 10px;
 }
 .user-status--online{
     color: #4ade80;
@@ -326,7 +309,6 @@
     color: #df0000;
 
 }
-/* ===== remove inline styles in ChatPage.tsx ===== */
 .content-bottom {
     position: relative;
 }
@@ -354,7 +336,6 @@
     opacity: 0.6;
 }
 
-/* ===== upload confirm modal ===== */
 .upload-modal {
     width: 420px;
 }
@@ -385,11 +366,9 @@
     bottom: 65px;
     left: 56px;
     z-index: 9999;
-
     width: 340px;
     max-height: 280px;
     overflow: auto;
-
     background: #fff;
     border: 1px solid rgba(0,0,0,0.12);
     border-radius: 14px;
@@ -446,16 +425,16 @@
     font-size: 13px;
     opacity: 0.7;
 }
-/*THEME DARK/LIGHT*/
-/* LIGHT THEME */
+
 :root[data-theme="light"] {
-    --bg-main: #f5f7fb;
+    --bg-main: #e6e6e6;
     --bg-card: #ffffff;
     --text-main: #1f2937;
     --text-sub: #6b7280;
     --border-color: #e5e7eb;
+    --bg-body: #e5ddea;
 }
-/* DARK THEME */
+
 :root[data-theme="dark"] {
     --bg-main: #0f172a;
     --bg-card: #1e293b;
@@ -463,7 +442,7 @@
     --text-sub: #9ca3af;
     --border-color: #334155;
 }
-/* STYLE TOGGLE*/
+
 .theme-toggle-icon {
     cursor: pointer;
     font-size: 18px;
