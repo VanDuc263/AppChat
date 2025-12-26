@@ -1,6 +1,6 @@
 import {createContext, useContext, useState, ReactNode, useRef} from "react";
 import { sendMessageApi, getMessageApi } from "../services/chatService";
-import {checkUserExistApi} from "../services/chatService";
+import {checkUserExistApi,checkUserOnlineApi} from "../services/chatService";
 
 export interface Message {
     id: number;
@@ -23,10 +23,11 @@ interface MessageContextType {
     conversations: Conversation[];
     messages: Message[];
     page: number;
-    currentConversation: string | null;
-
-
     setPage: (page: number) => void;
+    currentConversation: string | null;
+    currentOnline : boolean;
+    setCurrentOnline : (status : boolean) => void;
+
     setCurrentConversation: (name: string | null) => void;
 
     sendMessage: (to: string, text: string) => void;
@@ -55,6 +56,7 @@ export function MessageProvider({ children }: { children: ReactNode }) {
     const [conversations, setConversations] = useState<Conversation[]>([]);
     const [page, setPage] = useState(1);
     const [currentConversation, setCurrentConversation] = useState<string | null>(null);
+    const [currentOnline, setCurrentOnline] = useState<boolean | null>(null);
     const [searchState,setSearchState] = useState<SearchState>({loadding : false,result : null})
     const currentUsernameSearchRef = useRef("");
     const loadModeRef = useRef<"INIT" | "LOAD_MORE">("INIT");
@@ -117,7 +119,8 @@ export function MessageProvider({ children }: { children: ReactNode }) {
     const selectConversation = (name: string, pageParam = 1) => {
         setCurrentConversation(name);
         setPage(pageParam);
-        setMessages([]); // messages sẽ do persistence hook load
+        setMessages([]);
+        checkUserOnlineApi(name)
         getMessageApi(name, pageParam);
         loadModeRef.current = "INIT"
         setShouldAutoScroll(true)
@@ -163,9 +166,11 @@ export function MessageProvider({ children }: { children: ReactNode }) {
                 conversations,
                 messages,
                 page,
+                setPage,
+                currentOnline,
+                setCurrentOnline,
                 currentConversation,
 
-                setPage,
                 setCurrentConversation,
 
                 sendMessage,

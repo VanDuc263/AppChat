@@ -27,7 +27,7 @@ function ChatAppContent() {
     useChatPersistence();
     const {user} = useAuth();
     const [text, setText] = useState("");
-    const {sendMessage, currentConversation, selectConversation, conversations} = useMessage();
+    const {sendMessage, currentConversation, selectConversation, conversations,currentOnline} = useMessage();
 
     useMessageListener();
 
@@ -70,6 +70,7 @@ function ChatAppContent() {
     const [stickerTab, setStickerTab] = useState<"recent" | "all">("all");
     const stickerCtx = (require as any).context("../assets/img/stickers", false, /\.png$/i);
     const ALL_STICKER_KEYS: string[] = stickerCtx.keys().sort();
+    const username = localStorage.getItem("username")
 
     const [recentStickerKeys, setRecentStickerKeys] = useState<string[]>(() => {
         try {
@@ -283,7 +284,9 @@ function ChatAppContent() {
 
                         <div className="sidebar__bottom">
                             <div className="conversations">
-                                {conversations.map((conversation) => (
+                                {conversations
+                                    .filter(c => c.name !== username)
+                                    .map((conversation) => (
                                     <ConversationItem
                                         key={conversation.name}
                                         onClick={() => selectConversation(conversation.name, 1)}
@@ -301,7 +304,10 @@ function ChatAppContent() {
                     <div className="content">
                         <div className="content-head">
                             <span>{currentConversation}</span>
-                            <FontAwesomeIcon icon={faCircle} className="user-status"/>
+
+                            {currentOnline &&  <FontAwesomeIcon icon={faCircle} className="user-status user-status--online"/>}
+                            {!currentOnline &&  <FontAwesomeIcon icon={faCircle} className="user-status user-status--offline"/>}
+
                         </div>
 
                         <MessageList/>
