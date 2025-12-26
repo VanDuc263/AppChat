@@ -86,8 +86,29 @@ function renderMessageContent(text: string) {
 
         return <img src={src} alt="sticker" loading="lazy" className="sticker-img" />;
     }
-
-    return <>{text}</>;
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const parts = text.split(urlRegex);
+    // return <>{text}</>;
+    // CLICK LINK //
+    return (
+        <>
+            {parts.map((part, index) =>
+                urlRegex.test(part) ? (
+                    <a
+                        key={index}
+                        href={part}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="chat-link"
+                    >
+                        {part}
+                    </a>
+                ) : (
+                    <span key={index}>{part}</span>
+                )
+            )}
+        </>
+    );
 }
 
 export default function MessageList() {
