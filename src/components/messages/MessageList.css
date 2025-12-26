@@ -183,4 +183,15 @@
 :root[data-theme="dark"] .message-group.me .message-bubble {
     background: linear-gradient(135deg, #4f46e5, #7c3aed);
 }
+/*LINK*/
+.chat-link {
+    color: #9dcadf;
+    text-decoration: underline;
+    word-break: break-all;
+    cursor: pointer;
+}
+
+:root[data-theme="dark"] .chat-link {
+    color: #9dcadf;
+}
 
