@@ -12,7 +12,7 @@ const safeDecode = (s: any) => {
 };
 
 export function useMessageListener() {
-    const { addMessage, replaceMessages, replaceConversations } = useMessage();
+    const { addMessage, replaceMessages, replaceConversations,handleMessageResponse } = useMessage();
 
     useEffect(() => {
         const socket = getSocket();
@@ -31,7 +31,7 @@ export function useMessageListener() {
                     mes: safeDecode(m?.mes),
                 }));
 
-                replaceMessages(decoded);
+                handleMessageResponse(decoded);
             }
 
             if (data.event === "GET_USER_LIST" && data.status === "success") {

@@ -16,7 +16,7 @@ export interface Conversation {
     actionTime: string;
 }
 type SearchState = {
-    loadding : boolean
+    loadding : boolean;
     result : boolean | null;
 }
 interface MessageContextType {
@@ -25,6 +25,7 @@ interface MessageContextType {
     page: number;
     currentConversation: string | null;
 
+
     setPage: (page: number) => void;
     setCurrentConversation: (name: string | null) => void;
 
@@ -32,6 +33,7 @@ interface MessageContextType {
     addMessage: (message: Message) => void;
 
     replaceMessages: (messages: Message[]) => void;
+    appendMessages: (messages: Message[]) => void;
     replaceConversations: (conversations: Conversation[]) => void;
 
     selectConversation: (username: string, page?: number) => void;
@@ -41,6 +43,9 @@ interface MessageContextType {
     searchState : SearchState;
     onSearchResult : (status : boolean) => void;
     resetSearch : () => void;
+    loadMessage : (page : number) => void;
+    handleMessageResponse: (messages: Message[]) => void;
+    shouldAutoScroll: boolean;
 }
 
 const MessageContext = createContext<MessageContextType | null>(null);
@@ -52,6 +57,8 @@ export function MessageProvider({ children }: { children: ReactNode }) {
     const [currentConversation, setCurrentConversation] = useState<string | null>(null);
     const [searchState,setSearchState] = useState<SearchState>({loadding : false,result : null})
     const currentUsernameSearchRef = useRef("");
+    const loadModeRef = useRef<"INIT" | "LOAD_MORE">("INIT");
+    const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
 
     // ========= ACTIONS =========
 
@@ -75,7 +82,18 @@ export function MessageProvider({ children }: { children: ReactNode }) {
         const sorted = [...newMessages].sort((a, b) => a.id - b.id);
         setMessages(sorted);
     };
-
+    const appendMessages = (newMessages : Message[]) => {
+        setMessages(prev =>
+            [...prev,...newMessages].sort((a,b) => a.id - b.id)
+        )
+    }
+    const loadMessage = (page : number) =>{
+        const nextPage = page + 1;
+        getMessageApi(currentConversation,nextPage)
+        loadModeRef.current = "LOAD_MORE"
+        setPage(nextPage)
+        setShouldAutoScroll(false)
+    }
     const replaceConversations = (newConversations: Conversation[]) => {
         setConversations(newConversations);
     };
@@ -101,6 +119,8 @@ export function MessageProvider({ children }: { children: ReactNode }) {
         setPage(pageParam);
         setMessages([]); // messages sẽ do persistence hook load
         getMessageApi(name, pageParam);
+        loadModeRef.current = "INIT"
+        setShouldAutoScroll(true)
     };
     const searchUser = (username : string) =>{
         currentUsernameSearchRef.current = username
@@ -125,10 +145,18 @@ export function MessageProvider({ children }: { children: ReactNode }) {
     }
     const resetSearch = () => {
         setSearchState({
-            loading: false,
+            loadding : false,
             result: null,
         });
     };
+    const handleMessageResponse = (newMessages: Message[]) => {
+        if (loadModeRef.current === "INIT") {
+            replaceMessages(newMessages);
+        } else {
+            appendMessages(newMessages);
+        }
+    };
+
     return (
         <MessageContext.Provider
             value={{
@@ -143,13 +171,17 @@ export function MessageProvider({ children }: { children: ReactNode }) {
                 sendMessage,
                 addMessage,
                 replaceMessages,
+                appendMessages,
                 replaceConversations,
                 selectConversation,
+                handleMessageResponse,
 
                 searchUser,
                 searchState,
                 onSearchResult,
                 resetSearch,
+                loadMessage,
+                shouldAutoScroll
             }}
         >
             {children}

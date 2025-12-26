@@ -2,10 +2,8 @@ import {useMessage} from "../../contexts/MessageContext";
 import {useAuth} from "../../contexts/AuthContext";
 import "./MessageList.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFileArrowDown } from "@fortawesome/free-solid-svg-icons";
-
+import { faFileArrowDown,faCircleChevronDown } from "@fortawesome/free-solid-svg-icons";
 import {useEffect, useRef} from "react";
-
 const IMAGE_PREFIX = "__IMG__:";
 const VIDEO_PREFIX = "__VID__:";
 const FILE_PREFIX = "__FILE__:";
@@ -93,16 +91,39 @@ function renderMessageContent(text: string) {
 }
 
 export default function MessageList() {
-    const {messages} = useMessage();
+    const {messages,page,loadMessage,currentConversation,shouldAutoScroll} = useMessage();
     const {user} = useAuth();
     const mesEndRef = useRef<HTMLDivElement | null>(null);
+    const scrollBtnRef = useRef<HTMLDivElement|null>(null)
+    const containerRef = useRef<HTMLDivElement|null>(null)
     const sortedMes = [...messages].sort((a, b) => a.id - b.id);
+    const prevScrollHeightRef = useRef(0);
+
+
     const scrollToBottom = () => {
         mesEndRef.current?.scrollIntoView({behavior: "smooth"});
     };
 
+    const handleScroll = () => {
+        const el = containerRef.current
+        if(el.scrollTop === 0){
+            prevScrollHeightRef.current = el.scrollHeight
+            loadMessage(page)
+        }
+        el.scrollHeight - el.scrollTop < 1500 ? scrollBtnRef.current.style.display = 'none' : scrollBtnRef.current.style.display = 'flex'
+       console.log(el.scrollHeight - el.scrollTop)
+    }
     useEffect(() => {
-        scrollToBottom();
+        const el = containerRef.current;
+        if (!el) return;
+
+        if (shouldAutoScroll) {
+            scrollToBottom();
+        } else {
+            const newScrollHeight = el.scrollHeight;
+            const delta = newScrollHeight - prevScrollHeightRef.current;
+            el.scrollTop += delta;
+        }
     }, [messages]);
 
     const groupedMessages: any[] = [];
@@ -121,7 +142,7 @@ export default function MessageList() {
     });
 
     return (
-        <div className="messages">
+        <div className="messages" ref={containerRef} onScroll={handleScroll}>
             {groupedMessages.map((group) => {
                 const isMe = user?.username === group.name;
 
@@ -165,7 +186,10 @@ export default function MessageList() {
                     </div>
                 );
             })}
+            <div onClick={scrollToBottom} ref={scrollBtnRef} className="messages--scroll-bottom">
+                <FontAwesomeIcon className="scroll-bottom__icon" icon={faCircleChevronDown}/>
 
+            </div>
             <div ref={mesEndRef}></div>
         </div>
     );
