@@ -15,8 +15,10 @@ html {
 
 body {
     font-size: 1.6rem;
-    color: #1a1a1a;
-    background-color: #e5e9f0;
+    /*color: #1a1a1a;*/
+    /*background-color: #e5e9f0;*/
+    color: var(--text-main);
+    background-color: var(--bg-main);
     line-height: 1.5;
     height: 100%;
     overflow: hidden;
@@ -50,12 +52,15 @@ body {
 
 
 ::-webkit-scrollbar-thumb {
-    background: #b0b8c4;
+    /*background: #b0b8c4;*/
+    background: var(--border-color);
     border-radius: 4px;
 }
 
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #8a9199;
+    /*background: #8a9199;*/
+    background: var(--text-sub);
 }
+
 

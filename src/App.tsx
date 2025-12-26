@@ -1,4 +1,5 @@
 import {AuthProvider} from "./contexts/AuthContext";
+import { ThemeProvider } from "./contexts/ThemeContext";
 import {useAuthSocketListener} from "./hooks/useAuthSocketListener";
 import AppRoutes from "./routes/AppRoutes";
 
@@ -9,9 +10,11 @@ function AppContext(){
 
 function App() {
   return (
-    <AuthProvider>
-        <AppContext/>
-    </AuthProvider>
+      <ThemeProvider>
+         <AuthProvider>
+            <AppContext/>
+         </AuthProvider>
+      </ThemeProvider>
   );
 }
 
