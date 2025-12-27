@@ -28,7 +28,6 @@ interface Room {
 function ChatAppContent() {
     useChatPersistence();
     const {user} = useAuth();
-    const [text, setText] = useState("");
     const {sendMessage, currentConversation, selectConversation, conversations,currentOnline} = useMessage();
 
     useMessageListener();
@@ -108,10 +107,20 @@ function ChatAppContent() {
         sendMessage(currentConversation, `${STICKER_PREFIX}${key}`);
         setShowSticker(false);
     };
+    const [text, setText] = useState("");
+    const handleSendText = () => {
+        if (!text.trim()) return;
 
+        if (!currentConversation) {
+            alert("Bạn hãy chọn 1 cuộc trò chuyện trước.");
+            return;
+        }
+
+        sendMessage(currentConversation, text);
+        setText("");
+    };
     const [uploading, setUploading] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
-
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [pendingFile, setPendingFile] = useState<File | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string>("");
@@ -245,6 +254,26 @@ function ChatAppContent() {
             setUploadProgress(0);
         }
     };
+    useEffect(() => {
+        if (!showUploadModal) return;
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Enter") {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!pendingFile) return;
+                if (uploading) return;
+                confirmSendAttachment();
+            }
+            if (e.key === "Escape") {
+                e.preventDefault();
+                e.stopPropagation();
+                closeUploadModal();
+            }
+        };
+
+        window.addEventListener("keydown", onKeyDown, true);
+        return () => window.removeEventListener("keydown", onKeyDown, true);
+    }, [showUploadModal, pendingFile, uploading]);
 
     return (
         <div className="app">
@@ -447,6 +476,12 @@ function ChatAppContent() {
                                     value={text}
                                     placeholder="Nhập tin nhắn..."
                                     onChange={(e) => setText(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                            e.preventDefault();
+                                            if (!uploading) handleSendText();
+                                        }
+                                    }}
                                 />
 
                                 <button

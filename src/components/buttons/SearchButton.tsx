@@ -18,7 +18,21 @@ export default function SearchButton(){
                 <button onClick={() => searchUser(text)}  className="sidebar__search-btn">
                     <FontAwesomeIcon icon={faMagnifyingGlass} />
                 </button>
-                <input className="sidebar__search-inp" type="text" value={text} onChange={(e) => setText(e.target.value)} onFocus={() => resetSearch()} placeholder="Tìm kiếm"/>
+                <input
+                    className="sidebar__search-inp"
+                    type="text"
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
+                    onFocus={() => resetSearch()}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            e.preventDefault();
+                            if (!text.trim()) return;
+                            searchUser(text);
+                        }
+                    }}
+                    placeholder="Tìm kiếm"
+                />
 
             </div>
             {searchState.loadding && <p className="search-result search-result-error">Đang tìm kiếm...</p>}
