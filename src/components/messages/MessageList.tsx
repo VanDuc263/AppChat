@@ -132,7 +132,6 @@ export default function MessageList() {
             loadMessage(page)
         }
         el.scrollHeight - el.scrollTop < 1500 ? scrollBtnRef.current.style.display = 'none' : scrollBtnRef.current.style.display = 'flex'
-       console.log(el.scrollHeight - el.scrollTop)
     }
     useEffect(() => {
         const el = containerRef.current;

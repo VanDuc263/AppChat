@@ -49,7 +49,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const logout = () => {
         setAuthStatus("unauthenticated")
         logoutApi()
-        disconnectSocket()
         setUser(null)
         localStorage.removeItem("username");
         localStorage.removeItem("re_login");

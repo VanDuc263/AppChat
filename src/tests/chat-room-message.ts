@@ -47,17 +47,17 @@ function login(user: string, pass: string) {
 /* ================= JOIN ROOM ================= */
 
 function joinRoom(roomName: string) {
-    const socket = connectSocket();
-
-    socket.send(JSON.stringify({
-        action: "onchat",
-        data: {
-            event: "JOIN_ROOM",
-            data: {
-                name: roomName
-            }
-        }
-    }));
+    // const socket = connectSocket();
+    //
+    // socket.send(JSON.stringify({
+    //     action: "onchat",
+    //     data: {
+    //         event: "JOIN_ROOM",
+    //         data: {
+    //             name: roomName
+    //         }
+    //     }
+    // }));
 }
 
 /* ================= GET ROOM MESSAGES ================= */

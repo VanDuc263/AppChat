@@ -1,19 +1,20 @@
 import { useAuth } from "../contexts/AuthContext";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { Link, Navigate } from "react-router-dom";
 import "../styles/LoginPage.css";
 import LoadingSpinner from "../components/LoadingSpinner";
+import {keyboardKey} from "@testing-library/user-event";
 
 const LoginPage: React.FC = () => {
     const { authStatus, login } = useAuth();
     const [username, setUsername] = useState("");
     const [pass, setPass] = useState("");
 
+
     // ✅ đã đăng nhập → đi chat
     if (authStatus === "authenticated") {
         return <Navigate to="/chat" replace />;
     }
-
     return (
         <>
             <div className="login-container">
@@ -25,7 +26,14 @@ const LoginPage: React.FC = () => {
 
                     <form
                         className="login-form"
-                        onSubmit={(e) => e.preventDefault()}
+                        onSubmit={(e) =>
+                            {
+                                e.preventDefault()
+                                if (authStatus !== "checking") {
+                                    login(username, pass);
+                                }
+                            }
+                        }
                     >
                         <div className="input-group">
                             <label htmlFor="username">Tên đăng nhập</label>
@@ -54,7 +62,7 @@ const LoginPage: React.FC = () => {
                         </div>
 
                         <button
-                            type="button"
+                            type="submit"
                             className="login-button"
                             onClick={() => login(username, pass)}
                             disabled={authStatus === "checking"}
