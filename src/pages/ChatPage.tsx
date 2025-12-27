@@ -1,5 +1,6 @@
 import MessageList from "../components/messages/MessageList";
 import {useMessageListener} from "../hooks/useMessageListener";
+import {useOnlineChecker} from "../hooks/useOnlineChecker";
 import {MessageProvider, useMessage} from "../contexts/MessageContext";
 import {useAuth} from "../contexts/AuthContext";
 import "../styles/ChatPage.css";
@@ -27,10 +28,12 @@ interface Room {
 
 function ChatAppContent() {
     useChatPersistence();
+    useMessageListener();
+    useOnlineChecker();
+
     const {user} = useAuth();
     const {sendMessage, currentConversation, selectConversation, conversations,currentOnline} = useMessage();
 
-    useMessageListener();
 
     const imageInputRef = useRef<HTMLInputElement | null>(null);
     const videoInputRef = useRef<HTMLInputElement | null>(null);

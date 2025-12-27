@@ -120,8 +120,7 @@ export function MessageProvider({ children }: { children: ReactNode }) {
         setCurrentConversation(name);
         setPage(pageParam);
         setMessages([]);
-        checkUserOnlineApi(name)
-        getMessageApi(name, pageParam);
+            getMessageApi(name, pageParam);
         loadModeRef.current = "INIT"
         setShouldAutoScroll(true)
     };
