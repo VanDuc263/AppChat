@@ -1,5 +1,5 @@
 import {createContext, useContext, useState, ReactNode, useRef} from "react";
-import { sendMessageApi, getMessageApi } from "../services/chatService";
+import { sendMessageApi, getMessageApi,sendRoomMessageApi, } from "../services/chatService";
 import {checkUserExistApi,checkUserOnlineApi} from "../services/chatService";
 
 export interface Message {
@@ -99,28 +99,38 @@ export function MessageProvider({ children }: { children: ReactNode }) {
     const replaceConversations = (newConversations: Conversation[]) => {
         setConversations(newConversations);
     };
+    const isRoomConversation = (name: string): boolean => {
+        const conv = conversations.find((c) => c.name === name);
+        return conv ? conv.type == 1 : false;
+    };
 
     const sendMessage = (to: string, text: string) => {
         const username = localStorage.getItem("username");
         if (!username) return;
+
+        const isRoom = isRoomConversation(to);
 
         const newMes: Message = {
             id: Date.now(),
             name: username,
             to,
             mes: text,
-            type: 1,
+            type: isRoom ? 1 : 0,
         };
 
         addMessage(newMes);
-        sendMessageApi(to, text);
+        if (isRoom) {
+            sendRoomMessageApi(to, text);
+        } else {
+            sendMessageApi(to, text);
+        }
     };
 
     const selectConversation = (name: string, pageParam = 1) => {
         setCurrentConversation(name);
         setPage(pageParam);
         setMessages([]);
-            getMessageApi(name, pageParam);
+        getMessageApi(name, pageParam);
         loadModeRef.current = "INIT"
         setShouldAutoScroll(true)
     };

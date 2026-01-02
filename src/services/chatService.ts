@@ -28,6 +28,35 @@ export function sendMessageApi(toUser: string, mes: string) {
         socket.addEventListener("open", sendMessage, { once: true });
     }
 }
+// send chat room
+export function sendRoomMessageApi(roomName: string, mes: string) {
+    const socket = getSocket();
+    if (!socket) return;
+
+    const safeMes = encodeURIComponent(mes);
+
+    const sendMessage = () => {
+        socket.send(
+            JSON.stringify({
+                action: "onchat",
+                data: {
+                    event: "SEND_CHAT",
+                    data: {
+                        type: "room",    
+                        to: roomName,
+                        mes: safeMes,
+                    },
+                },
+            })
+        );
+    };
+
+    if (socket.readyState === WebSocket.OPEN) {
+        sendMessage();
+    } else {
+        socket.addEventListener("open", sendMessage, { once: true });
+    }
+}
 
 export function getMessageApi(targetUser: string, page: number) {
     const socket = getSocket();

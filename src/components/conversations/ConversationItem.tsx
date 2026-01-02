@@ -65,7 +65,6 @@ export default function ConversationItem({
                 <img
                     className="conversation-img"
                     src={type === 0 ? userAvatar : groupAvatar}
-
                     alt={`Avatar của ${name}`}
                 />
             </div>
