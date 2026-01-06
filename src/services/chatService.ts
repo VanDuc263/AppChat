@@ -28,6 +28,35 @@ export function sendMessageApi(toUser: string, mes: string) {
         socket.addEventListener("open", sendMessage, { once: true });
     }
 }
+// send chat room
+export function sendRoomMessageApi(roomName: string, mes: string) {
+    const socket = getSocket();
+    if (!socket) return;
+
+    const safeMes = encodeURIComponent(mes);
+
+    const sendMessage = () => {
+        socket.send(
+            JSON.stringify({
+                action: "onchat",
+                data: {
+                    event: "SEND_CHAT",
+                    data: {
+                        type: "room",    
+                        to: roomName,
+                        mes: safeMes,
+                    },
+                },
+            })
+        );
+    };
+
+    if (socket.readyState === WebSocket.OPEN) {
+        sendMessage();
+    } else {
+        socket.addEventListener("open", sendMessage, { once: true });
+    }
+}
 
 export function getMessageApi(targetUser: string, page: number) {
     const socket = getSocket();
@@ -45,6 +74,37 @@ export function getMessageApi(targetUser: string, page: number) {
                     event: "GET_PEOPLE_CHAT_MES",
                     data: {
                         name: targetUser,
+                        page: page,
+                    },
+                },
+            })
+        );
+    };
+
+    if (socket.readyState === WebSocket.OPEN) {
+        sendGetMessage();
+    } else {
+        socket.addEventListener("open", sendGetMessage, { once: true });
+    }
+}
+export function getRoomMessageApi(roomName: string, page: number) {
+    const socket = getSocket();
+
+    if (!socket) {
+        console.error("WebSocket chưa sẵn sàng. Hãy gọi connectSocket trước.");
+        return;
+    }
+
+    const sendGetMessage = () => {
+        console.log("[GET_ROOM_MESSAGE] gửi lên server:", roomName, page);
+
+        socket.send(
+            JSON.stringify({
+                action: "onchat",
+                data: {
+                    event: "GET_ROOM_CHAT_MES",
+                    data: {
+                        name: roomName,
                         page: page,
                     },
                 },
