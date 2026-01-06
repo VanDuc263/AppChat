@@ -87,6 +87,37 @@ export function getMessageApi(targetUser: string, page: number) {
         socket.addEventListener("open", sendGetMessage, { once: true });
     }
 }
+export function getRoomMessageApi(roomName: string, page: number) {
+    const socket = getSocket();
+
+    if (!socket) {
+        console.error("WebSocket chưa sẵn sàng. Hãy gọi connectSocket trước.");
+        return;
+    }
+
+    const sendGetMessage = () => {
+        console.log("[GET_ROOM_MESSAGE] gửi lên server:", roomName, page);
+
+        socket.send(
+            JSON.stringify({
+                action: "onchat",
+                data: {
+                    event: "GET_ROOM_CHAT_MES",
+                    data: {
+                        name: roomName,
+                        page: page,
+                    },
+                },
+            })
+        );
+    };
+
+    if (socket.readyState === WebSocket.OPEN) {
+        sendGetMessage();
+    } else {
+        socket.addEventListener("open", sendGetMessage, { once: true });
+    }
+}
 
 export function getConversationApi() {
     const socket = getSocket();

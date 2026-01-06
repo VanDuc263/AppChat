@@ -437,7 +437,7 @@ function ChatAppContent() {
                                     title="Gửi ảnh"
                                 />
 
-                                <FontAwesomeIcon
+                                    <FontAwesomeIcon
                                     className="toolbar-icon"
                                     icon={faIcons}
                                     title="Sticker"

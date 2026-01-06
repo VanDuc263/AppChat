@@ -1,5 +1,5 @@
 import {createContext, useContext, useState, ReactNode, useRef} from "react";
-import { sendMessageApi, getMessageApi,sendRoomMessageApi, } from "../services/chatService";
+import { sendMessageApi, getMessageApi,sendRoomMessageApi, getRoomMessageApi, } from "../services/chatService";
 import {checkUserExistApi,checkUserOnlineApi} from "../services/chatService";
 
 export interface Message {
@@ -25,7 +25,7 @@ interface MessageContextType {
     page: number;
     setPage: (page: number) => void;
     currentConversation: string | null;
-    currentOnline : boolean;
+    currentOnline : boolean | null;
     setCurrentOnline : (status : boolean) => void;
 
     setCurrentConversation: (name: string | null) => void;
@@ -90,8 +90,14 @@ export function MessageProvider({ children }: { children: ReactNode }) {
         )
     }
     const loadMessage = (page : number) =>{
+        if (!currentConversation) return;
         const nextPage = page + 1;
-        getMessageApi(currentConversation,nextPage)
+        const isRoom = isRoomConversation(currentConversation);
+        if (isRoom) {
+            getRoomMessageApi(currentConversation, nextPage);
+        } else {
+            getMessageApi(currentConversation, nextPage);
+        }
         loadModeRef.current = "LOAD_MORE"
         setPage(nextPage)
         setShouldAutoScroll(false)
@@ -100,6 +106,7 @@ export function MessageProvider({ children }: { children: ReactNode }) {
         setConversations(newConversations);
     };
     const isRoomConversation = (name: string): boolean => {
+        if (!name) return false;
         const conv = conversations.find((c) => c.name === name);
         return conv ? conv.type == 1 : false;
     };
@@ -130,7 +137,14 @@ export function MessageProvider({ children }: { children: ReactNode }) {
         setCurrentConversation(name);
         setPage(pageParam);
         setMessages([]);
-        getMessageApi(name, pageParam);
+        const isRoom = isRoomConversation(name);
+
+        if (isRoom) {
+            getRoomMessageApi(name, pageParam);
+        } else {
+            getMessageApi(name, pageParam);
+        }
+
         loadModeRef.current = "INIT"
         setShouldAutoScroll(true)
     };

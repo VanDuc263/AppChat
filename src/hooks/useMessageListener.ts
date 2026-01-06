@@ -12,7 +12,7 @@ const safeDecode = (s: any) => {
 };
 
 export function useMessageListener() {
-    const { addMessage, replaceMessages, replaceConversations,handleMessageResponse,setCurrentOnline } = useMessage();
+    const { addMessage, replaceMessages, replaceConversations,handleMessageResponse,setCurrentOnline, currentConversation, } = useMessage();
 
     useEffect(() => {
         const socket = getSocket();
@@ -23,12 +23,28 @@ export function useMessageListener() {
 
         const handleMessage = (event: MessageEvent) => {
             const data = JSON.parse(event.data);
-
-            if (data.event === "GET_PEOPLE_CHAT_MES" && data.status === "success") {
+            // console.log("[WS_RECEIVE]", data.event, data);
+            // if ((data.event === "GET_PEOPLE_CHAT_MES" || data.event === "GET_ROOM_CHAT_MES") && data.status === "success") {
+            //     const list = Array.isArray(data.data) ? data.data : [];
+            //     const decoded = list.map((m: any) => ({
+            //         ...m,
+            //         mes: safeDecode(m?.mes),
+            //     }));
+            //
+            //     handleMessageResponse(decoded);
+            if ((data.event === "GET_PEOPLE_CHAT_MES" || data.event === "GET_ROOM_CHAT_MES") && data.status === "success") {
+                console.log("ROOM raw data.data =", data.data);
                 const list = Array.isArray(data.data) ? data.data : [];
+
+                const isRoom = data.event === "GET_ROOM_CHAT_MES";
+
                 const decoded = list.map((m: any) => ({
                     ...m,
                     mes: safeDecode(m?.mes),
+                    // ÉP type đúng cho room để UI không bị lọc mất
+                    type: isRoom ? 1 : 0,
+                    // ÉP "to" về đúng room hiện tại phòng khi BE trả thiếu/khác
+                    to: m?.to ?? (isRoom ? (m?.roomName ?? m?.room ?? "") : m?.to),
                 }));
 
                 handleMessageResponse(decoded);
@@ -80,5 +96,7 @@ export function useMessageListener() {
 
         socket.addEventListener("message", handleMessage);
         return () => socket.removeEventListener("message", handleMessage);
-    }, [addMessage, replaceMessages, replaceConversations]);
+    }, [addMessage, replaceMessages, replaceConversations,handleMessageResponse,
+        setCurrentOnline,
+        currentConversation,]);
 }
