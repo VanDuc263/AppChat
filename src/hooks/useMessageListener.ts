@@ -22,7 +22,7 @@ export function useMessageListener() {
         if (!username) return;
 
         const handleMessage = (event: MessageEvent) => {
-            const data = JSON.parse(event.data);
+            // const data = JSON.parse(event.data);
             // console.log("[WS_RECEIVE]", data.event, data);
             // if ((data.event === "GET_PEOPLE_CHAT_MES" || data.event === "GET_ROOM_CHAT_MES") && data.status === "success") {
             //     const list = Array.isArray(data.data) ? data.data : [];
@@ -32,19 +32,49 @@ export function useMessageListener() {
             //     }));
             //
             //     handleMessageResponse(decoded);
+            // 1) Raw payload từ WS
+            const raw = event.data;
+            // 2) Parse an toàn
+            let data: any;
+            try {
+                data = typeof raw === "string" ? JSON.parse(raw) : raw;
+            } catch (err) {
+                console.groupCollapsed("%c[WS_RECEIVE] Non-JSON payload", "color:#ff6b6b;font-weight:bold;");
+                console.log("raw =", raw);
+                console.error("parse error =", err);
+                console.groupEnd();
+                return;
+            }
+
+            // 3) Log FULL JSON (raw + parsed + pretty)
+            const evt = data?.event ?? data?.data?.event ?? "UNKNOWN_EVENT";
+            console.groupCollapsed(
+                `%c[WS_RECEIVE] ${evt} | status=${data?.status ?? "?"}`,
+                "color:#4dabf7;font-weight:bold;"
+            );
+            console.log("raw string =", raw);
+            console.log("parsed object =", data);
+            try {
+                console.log("pretty JSON =\n", JSON.stringify(data, null, 2));
+            } catch {}
+            console.groupEnd();
+
             if ((data.event === "GET_PEOPLE_CHAT_MES" || data.event === "GET_ROOM_CHAT_MES") && data.status === "success") {
                 console.log("ROOM raw data.data =", data.data);
-                const list = Array.isArray(data.data) ? data.data : [];
-
                 const isRoom = data.event === "GET_ROOM_CHAT_MES";
+
+                const list = isRoom
+                    ? (Array.isArray(data?.data?.chatData) ? data.data.chatData : [])
+                    : (Array.isArray(data?.data) ? data.data : []);
+
+                const roomNameFromRes =
+                    isRoom ? (data?.data?.name ?? data?.data?.roomName ?? "") : "";
 
                 const decoded = list.map((m: any) => ({
                     ...m,
                     mes: safeDecode(m?.mes),
-                    // ÉP type đúng cho room để UI không bị lọc mất
                     type: isRoom ? 1 : 0,
-                    // ÉP "to" về đúng room hiện tại phòng khi BE trả thiếu/khác
-                    to: m?.to ?? (isRoom ? (m?.roomName ?? m?.room ?? "") : m?.to),
+                    to: isRoom ? (m?.to ?? roomNameFromRes) : m?.to,
                 }));
 
                 handleMessageResponse(decoded);
