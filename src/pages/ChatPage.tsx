@@ -161,6 +161,13 @@ function ChatAppContent() {
         const identity = user?.id ?? user?.username ?? localStorage.getItem("username") ?? "guest";
         return `user_avatar_url_v1:${identity}`;
     };
+    const getAvatarByIdentity = (identity: string) => {
+        try {
+            return localStorage.getItem(`user_avatar_url_v1:${identity}`) || "";
+        } catch {
+            return "";
+        }
+    };
 
     const [avatarUrl, setAvatarUrl] = useState<string>("");
 
@@ -451,15 +458,16 @@ function ChatAppContent() {
                                 {conversations
                                     .filter(c => c.name !== username)
                                     .map((conversation) => (
-                                    <ConversationItem
-                                        key={conversation.name}
-                                        onClick={() => selectConversation(conversation.name, 1)}
-                                        name={conversation.name}
-                                        actionTime={conversation.actionTime}
-                                        type={conversation.type}
-                                        isActive={currentConversation === conversation.name}
-                                    />
-                                ))}
+                                        <ConversationItem
+                                            key={conversation.name}
+                                            onClick={() => selectConversation(conversation.name, 1)}
+                                            name={conversation.name}
+                                            actionTime={conversation.actionTime}
+                                            type={conversation.type}
+                                            avatar={getAvatarByIdentity(conversation.name)}   // ✅ thêm dòng này
+                                            isActive={currentConversation === conversation.name}
+                                        />
+                                    ))}
                             </div>
                         </div>
                     </div>
