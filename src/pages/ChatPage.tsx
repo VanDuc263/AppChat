@@ -153,6 +153,98 @@ function ChatAppContent() {
         setRoomName("");
         setShowCreateRoom(false);
     };
+    // ===== AVATAR (READY FOR IMAGE UPLOAD) =====
+    const avatarInputRef = useRef<HTMLInputElement | null>(null);
+    const handlePickAvatar = () => avatarInputRef.current?.click();
+
+    const getAvatarKey = () => {
+        const identity = user?.id ?? user?.username ?? localStorage.getItem("username") ?? "guest";
+        return `user_avatar_url_v1:${identity}`;
+    };
+    const getAvatarByIdentity = (identity: string) => {
+        try {
+            return localStorage.getItem(`user_avatar_url_v1:${identity}`) || "";
+        } catch {
+            return "";
+        }
+    };
+
+    const [avatarUrl, setAvatarUrl] = useState<string>("");
+
+    useEffect(() => {
+        try {
+            const key = getAvatarKey();
+            setAvatarUrl(localStorage.getItem(key) || "");
+        } catch {
+            setAvatarUrl("");
+        }
+    }, [user?.id, user?.username]);
+
+    const [showAvatarModal, setShowAvatarModal] = useState(false);
+    const [pendingAvatar, setPendingAvatar] = useState<File | null>(null);
+    const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string>("");
+
+    const [avatarUploading, setAvatarUploading] = useState(false);
+    const [avatarUploadProgress, setAvatarUploadProgress] = useState(0);
+
+    const closeAvatarModal = () => {
+        if (avatarPreviewUrl) URL.revokeObjectURL(avatarPreviewUrl);
+        setAvatarPreviewUrl("");
+        setPendingAvatar(null);
+        setShowAvatarModal(false);
+        setAvatarUploading(false);
+        setAvatarUploadProgress(0);
+    };
+
+    const handleAvatarChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const input = e.target;
+        const file = input.files?.[0];
+        if (!file) return;
+
+        // Chỉ nhận ảnh
+        if (!file.type?.startsWith("image/")) {
+            alert("Vui lòng chọn đúng file hình ảnh.");
+            input.value = "";
+            return;
+        }
+
+        // Giới hạn dung lượng (tuỳ bạn chỉnh)
+        if (file.size > 5 * 1024 * 1024) {
+            alert("Ảnh quá lớn (tối đa 5MB)");
+            input.value = "";
+            return;
+        }
+
+        const url = URL.createObjectURL(file);
+        setPendingAvatar(file);
+        setAvatarPreviewUrl(url);
+        setShowAvatarModal(true);
+
+        input.value = "";
+    };
+
+    const confirmUploadAvatar = async () => {
+        if (!pendingAvatar) return;
+
+        setAvatarUploading(true);
+        setAvatarUploadProgress(0);
+
+        try {
+            const url = await uploadFileToCloudinary(pendingAvatar, setAvatarUploadProgress);
+
+            setAvatarUrl(url);
+            try {
+                localStorage.setItem(getAvatarKey(), url);
+            } catch {}
+
+            closeAvatarModal();
+        } catch (err: any) {
+            console.error(err);
+            alert(err?.message || "Upload avatar thất bại");
+            setAvatarUploading(false);
+            setAvatarUploadProgress(0);
+        }
+    };
     const handleJoinRoom = () => {
         const roomNameInput = joinRoomName.trim();
 
@@ -286,19 +378,52 @@ function ChatAppContent() {
                     {/* Sidebar */}
                     <div className="sidebar">
                         <div className="sidebar__head">
-                            <div className="sidebar__title-row">
-                                <h2 className="sidebar__title">
-                                    Tin nhắn - <span>{user?.username}</span>
-                                </h2>
+                            {/* Avatar upload input */}
+                            <input
+                                ref={avatarInputRef}
+                                type="file"
+                                accept="image/*"
+                                hidden
+                                onChange={handleAvatarChange}
+                            />
 
-                                <FontAwesomeIcon
-                                    icon={theme === "dark" ? faSun : faMoon}
-                                    onClick={toggleTheme}
-                                    className="theme-toggle-icon"
-                                    title="Đổi giao diện"
-                                />
+                            <div className="sidebar__profile">
+                                {/* Avatar circle */}
+                                <button
+                                    type="button"
+                                    className="sidebar__avatar-btn"
+                                    onClick={handlePickAvatar}
+                                    title="Đổi ảnh đại diện"
+                                    aria-label="Đổi ảnh đại diện"
+                                >
+                                    {avatarUrl ? (
+                                        <img className="sidebar__avatar-img" src={avatarUrl} alt="avatar" />
+                                    ) : (
+                                        <span className="sidebar__avatar-fallback">
+          {(user?.username || "U").slice(0, 1).toUpperCase()}
+        </span>
+                                    )}
+
+                                    <span className="sidebar__avatar-badge">
+        <FontAwesomeIcon icon={faImage} />
+      </span>
+                                </button>
+
+                                <div className="sidebar__title-row">
+                                    <h2 className="sidebar__title">
+                                        Tin nhắn - <span>{user?.username}</span>
+                                    </h2>
+
+                                    <FontAwesomeIcon
+                                        icon={theme === "dark" ? faSun : faMoon}
+                                        onClick={toggleTheme}
+                                        className="theme-toggle-icon"
+                                        title="Đổi giao diện"
+                                    />
+                                </div>
                             </div>
-                            <div className="sidebar__search">
+
+                        <div className="sidebar__search">
 
                                 {/*input search*/}
                                 <SearchButton/>
@@ -333,15 +458,16 @@ function ChatAppContent() {
                                 {conversations
                                     .filter(c => c.name !== username)
                                     .map((conversation) => (
-                                    <ConversationItem
-                                        key={conversation.name}
-                                        onClick={() => selectConversation(conversation.name, 1)}
-                                        name={conversation.name}
-                                        actionTime={conversation.actionTime}
-                                        type={conversation.type}
-                                        isActive={currentConversation === conversation.name}
-                                    />
-                                ))}
+                                        <ConversationItem
+                                            key={conversation.name}
+                                            onClick={() => selectConversation(conversation.name, 1)}
+                                            name={conversation.name}
+                                            actionTime={conversation.actionTime}
+                                            type={conversation.type}
+                                            avatar={getAvatarByIdentity(conversation.name)}   // ✅ thêm dòng này
+                                            isActive={currentConversation === conversation.name}
+                                        />
+                                    ))}
                             </div>
                         </div>
                     </div>
@@ -584,6 +710,35 @@ function ChatAppContent() {
                     </div>
                 </div>
             )}
+            {showAvatarModal && pendingAvatar && (
+                <div className="modal-overlay">
+                    <div className="modal upload-modal">
+                        <h3>Cập nhật ảnh đại diện?</h3>
+
+                        <div className="upload-preview">
+                            {avatarPreviewUrl && (
+                                <img src={avatarPreviewUrl} alt="avatar-preview" />
+                            )}
+                        </div>
+
+                        <div className="upload-file-name">{pendingAvatar.name}</div>
+
+                        {avatarUploading && (
+                            <span className="upload-progress">{Math.round(avatarUploadProgress)}%</span>
+                        )}
+
+                        <div className="modal-actions">
+                            <button onClick={closeAvatarModal} disabled={avatarUploading}>
+                                Hủy
+                            </button>
+                            <button className="primary" onClick={confirmUploadAvatar} disabled={avatarUploading}>
+                                Lưu
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 }
