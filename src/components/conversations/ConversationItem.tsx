@@ -18,9 +18,8 @@ interface ConversationItemProps {
 export default function ConversationItem({
                                              name = "VanDuc",
                                             type,
-                                             actionTime,
+                                            actionTime,
                                              status = "Hoạt động 3 phút trước",
-                                             avatar = "",
                                              isActive = false,
                                              isUnread = false,
                                              onClick
@@ -53,9 +52,6 @@ export default function ConversationItem({
         return `${diffYears} năm trước`;
     };
 
-    const fallbackAvatar = type === 0 ? userAvatar : groupAvatar;
-    const avatarSrc = avatar?.trim() ? avatar : fallbackAvatar;
-
     return (
         <div
             className={`conversation__item ${isActive ? "active" : ""} ${isUnread ? "unread" : ""}`}
@@ -68,11 +64,8 @@ export default function ConversationItem({
             <div className="conversation-avatar-wrapper">
                 <img
                     className="conversation-img"
-                    src={avatarSrc}
+                    src={type === 0 ? userAvatar : groupAvatar}
                     alt={`Avatar của ${name}`}
-                    onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).src = fallbackAvatar; // nếu link lỗi
-                    }}
                 />
             </div>
 
