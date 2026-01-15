@@ -1,6 +1,8 @@
 import {createContext, useContext, useState, ReactNode, useRef} from "react";
 import { sendMessageApi, getMessageApi,sendRoomMessageApi, getRoomMessageApi, } from "../services/chatService";
 import {checkUserExistApi,checkUserOnlineApi} from "../services/chatService";
+import { UserService } from "../services/firebase/user.service";
+import {generateUserId} from "../utils/userId";
 
 export interface Message {
     id: number;
@@ -42,11 +44,12 @@ interface MessageContextType {
     searchUser : (username : string) => void;
 
     searchState : SearchState;
-    onSearchResult : (status : boolean) => void;
+    onSearchResult: (status: boolean) => Promise<void>;
     resetSearch : () => void;
     loadMessage : (page : number) => void;
     handleMessageResponse: (messages: Message[]) => void;
     shouldAutoScroll: boolean;
+    foundUser : any;
 }
 
 const MessageContext = createContext<MessageContextType | null>(null);
@@ -61,6 +64,7 @@ export function MessageProvider({ children }: { children: ReactNode }) {
     const currentUsernameSearchRef = useRef("");
     const loadModeRef = useRef<"INIT" | "LOAD_MORE">("INIT");
     const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
+    const [foundUser, setFoundUser] = useState<any>(null);
 
     // ========= ACTIONS =========
 
@@ -158,16 +162,26 @@ export function MessageProvider({ children }: { children: ReactNode }) {
 
         checkUserExistApi(username)
     }
-    const onSearchResult = (status : boolean) =>{
+    const onSearchResult = async (status: boolean) => {
 
         setSearchState({
             loadding : false,
             result : status,
         })
-        if(status){
-            selectConversation(currentUsernameSearchRef.current,1)
+        if (!status) {
+            setFoundUser(null);
+            return;
         }
+        selectConversation(currentUsernameSearchRef.current,1)
+        const username = currentUsernameSearchRef.current;
+        const userId = generateUserId(username);
 
+        await UserService.ensureUser(userId, username);
+
+        setFoundUser({
+            id: userId,
+            username,
+        });
     }
     const resetSearch = () => {
         setSearchState({
@@ -209,7 +223,8 @@ export function MessageProvider({ children }: { children: ReactNode }) {
                 onSearchResult,
                 resetSearch,
                 loadMessage,
-                shouldAutoScroll
+                shouldAutoScroll,
+                foundUser,
             }}
         >
             {children}

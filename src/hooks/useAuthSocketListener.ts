@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { getSocket } from "../services/socket";
 import { useAuth } from "../contexts/AuthContext";
-import { reLoginApi } from "../services/authService";
+import {loginApi, reLoginApi} from "../services/authService";
 import { getConversationApi } from "../services/chatService";
+import { generateUserId } from "../utils/userId";
 
 const MAX_RETRY = 2;
 const RETRY_DELAY = 8000;
@@ -30,6 +31,8 @@ function waitForSocketOpen(socket: WebSocket): Promise<void> {
 export function useAuthSocketListener() {
     const { setUser, setAuthStatus, authStatus } = useAuth();
     const [retryCount, setRetryCount] = useState(0);
+    const hasSuccessRef = useRef(false);
+    const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const forceRelogin = () => {
         console.warn("⛔ Auth timeout → force login");
@@ -40,12 +43,28 @@ export function useAuthSocketListener() {
         hasSuccessRef.current = false;
         setRetryCount(0);
 
+        if (retryTimeoutRef.current) {
+            clearTimeout(retryTimeoutRef.current);
+            retryTimeoutRef.current = null;
+        }
+
         setAuthStatus("unauthenticated");
     };
 
 
-    const hasSuccessRef = useRef(false);
-    const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    useEffect(() => {
+        if (authStatus === "checking") {
+            console.log("🔄 Reset auth retry state");
+
+            hasSuccessRef.current = false;
+            setRetryCount(0);
+
+             if (retryTimeoutRef.current) {
+                clearTimeout(retryTimeoutRef.current);
+                retryTimeoutRef.current = null;
+            }
+        }
+    }, [authStatus]);
 
     useEffect(() => {
         const socket = getSocket();
@@ -54,7 +73,6 @@ export function useAuthSocketListener() {
         const username = localStorage.getItem("username");
         const reLoginCode = localStorage.getItem("re_login");
 
-        // ❌ Không có thông tin login → unauth
         if (!username && !reLoginCode) {
             setAuthStatus("unauthenticated");
             return;
@@ -74,12 +92,18 @@ export function useAuthSocketListener() {
                     hasSuccessRef.current = true;
                     if (retryTimeoutRef.current) {
                         clearTimeout(retryTimeoutRef.current);
+                        retryTimeoutRef.current = null;
                     }
 
                     const newCode = res.data.RE_LOGIN_CODE;
                     localStorage.setItem("re_login", newCode);
 
-                    setUser({ username, code: newCode });
+                    setUser({
+                        id: generateUserId(username!),
+                        username,
+                        code: res.data.RE_LOGIN_CODE
+                    });
+                    console.log()
                     setAuthStatus("authenticated");
                     getConversationApi();
                 }
@@ -88,12 +112,10 @@ export function useAuthSocketListener() {
                     res.status === "error" &&
                     (res.event === "LOGIN" || res.event === "RE_LOGIN")
                 ) {
-                    console.error("❌ Auth error");
 
-                    localStorage.removeItem("username");
-                    localStorage.removeItem("re_login");
+                    console.error("❌ Auth error from server");
+                    forceRelogin();
 
-                    setAuthStatus("unauthenticated");
                 }
             } catch (err) {
                 console.error("Socket parse error", err);
@@ -110,28 +132,22 @@ export function useAuthSocketListener() {
 
             if (retryCount >= MAX_RETRY) {
                 console.error("❌ Max retry reached");
-                setAuthStatus("unauthenticated");
+                forceRelogin();
                 return;
             }
 
             try {
-                console.log("⏳ Waiting socket...");
-                try {
-                    await waitForSocketOpen(socket);
-                } catch {
-                    forceRelogin();
-                    return;
-                }
+                await waitForSocketOpen(socket);
 
                 console.log(`📡 RE_LOGIN attempt ${retryCount + 1}`);
-                reLoginApi(username!, reLoginCode!);
+                reLoginCode ?
+                    reLoginApi(username!, reLoginCode) :
 
                 retryTimeoutRef.current = setTimeout(() => {
                     setRetryCount(prev => prev + 1);
                 }, RETRY_DELAY);
             } catch (err) {
                 console.error("❌ Socket not connected", err);
-                setAuthStatus("unauthenticated");
             }
         };
 

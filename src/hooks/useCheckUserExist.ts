@@ -1,29 +1,34 @@
-import {useEffect, useState} from "react";
-import {getSocket} from "../services/socket";
-import {useMessage} from "../contexts/MessageContext";
+import { useEffect } from "react";
+import { getSocket } from "../services/socket";
+import { useMessage } from "../contexts/MessageContext";
 
 export function useCheckUserExist() {
-
-    const socket = getSocket();
-    const {onSearchResult} = useMessage();
+    const { onSearchResult } = useMessage();
 
     useEffect(() => {
-        if (!socket) return
-
+        const socket = getSocket();
+        if (!socket) return;
 
         const handleCheck = (event: MessageEvent) => {
-            const data = JSON.parse(event.data)
-            if (data.event === "CHECK_USER_EXIST" && data.status === "success") {
-                const res: boolean = data.data.status
+            try {
+                const data = JSON.parse(event.data);
 
-                onSearchResult(res)
+                if (
+                    data.event === "CHECK_USER_EXIST" &&
+                    data.status === "success"
+                ) {
+                    const res: boolean = data.data.status;
+                    onSearchResult(res);
+                }
+            } catch (err) {
+                console.error("❌ CHECK_USER_EXIST parse error", err);
             }
-        }
+        };
+
         socket.addEventListener("message", handleCheck);
 
-        return () =>{
-            socket.removeEventListener("message",handleCheck)
-        }
-    }, [socket]);
-
+        return () => {
+            socket.removeEventListener("message", handleCheck);
+        };
+    }, [onSearchResult]);
 }

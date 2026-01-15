@@ -1,7 +1,7 @@
 let socket: WebSocket | null = null;
 
 export function connectSocket() {
-    if (socket && socket.readyState !== WebSocket.CLOSED) {
+    if (socket && socket.readyState === WebSocket.OPEN) {
         return socket;
     }
 

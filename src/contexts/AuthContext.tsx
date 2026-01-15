@@ -3,6 +3,7 @@ import { connectSocket, disconnectSocket } from "../services/socket";
 import {loginApi,logoutApi,reLoginApi} from "../services/authService";
 
 interface User {
+    id: string;
     username: string;
     code : string;
     [key: string]: any;
@@ -27,18 +28,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: AuthProviderProps) {
     const [user, setUser] = useState<User | null>(null);
     const [authStatus,setAuthStatus] = useState<AuthStatus>("checking")
-    connectSocket()
-
-    useEffect(() => {
-        const hasReLogin = localStorage.getItem("re_login")
-        const hasUser = localStorage.getItem("username")
-
-        if(hasUser && hasReLogin){
-            setAuthStatus("checking")
-        }else{
-            setAuthStatus("unauthenticated")
-        }
-    }, []);
 
     const login = (username: string, password: string) => {
         setAuthStatus("checking");
@@ -47,11 +36,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
 
     const logout = () => {
-        setAuthStatus("unauthenticated")
         logoutApi()
         setUser(null)
         localStorage.removeItem("username");
         localStorage.removeItem("re_login");
+        setAuthStatus("unauthenticated")
     };
 
     return (

@@ -32,25 +32,26 @@ export function registerApi(username: string, password: string) {
 
 export function loginApi(username: string, password: string) {
     const socket = getSocket();
-    if (!socket) {
-        console.error("WebSocket chưa sẵn sàng. Hãy gọi connectSocket trước.");
+
+    if (!socket) return;
+    const payload = JSON.stringify({
+        action: "onchat",
+        data: {
+            event: "LOGIN",
+            data: { user: username, pass: password }
+        }
+    });
+
+    if (socket.readyState === WebSocket.OPEN) {
+        socket.send(payload);
         return;
     }
 
-    const sendLogin = () => {
-        socket.send(JSON.stringify({
-            action: "onchat",
-            data: {
-                event: "LOGIN",
-                data: { user: username, pass: password }
-            }
-        }));
-    };
-
-    if (socket.readyState === WebSocket.OPEN) {
-        sendLogin();
-    } else {
-        socket.addEventListener("open", sendLogin, { once: true });
+    if (socket.readyState === WebSocket.CONNECTING) {
+        const onOpen = () => {
+            socket.send(payload);
+        };
+        socket.addEventListener("open", onOpen, { once: true });
     }
 }
 
