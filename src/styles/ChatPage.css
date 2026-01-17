@@ -478,12 +478,11 @@
 
 .sidebar__profile{
     display: flex;
-    flex-direction: column;
     gap: 10px;
 }
 
 .sidebar__avatar-btn{
-    width: 64px;
+    min-width: 64px;
     height: 64px;
     border-radius: 50%;
     overflow: hidden;

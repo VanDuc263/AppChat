@@ -1,12 +1,9 @@
-// Import the functions you need from the SDKs you need
+// firebase.ts
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getStorage, FirebaseStorage } from "firebase/storage";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getFirestore, Firestore } from "firebase/firestore";
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
     apiKey: "AIzaSyC9-gyrM8IDoDEyATjD2us7ijarT2EnLWM",
     authDomain: "app-chat-439a5.firebaseapp.com",
@@ -19,8 +16,12 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
+
+// (Analytics chỉ chạy production, để cũng được)
 const analytics = getAnalytics(app);
 
+// ✅ FIRESTORE (BẮT BUỘC CHO KẾT BẠN)
+export const db: Firestore = getFirestore(app);
 
-// Khởi tạo Storage với kiểu FirebaseStorage
+// ✅ STORAGE (upload file, avatar…)
 export const storage: FirebaseStorage = getStorage(app);

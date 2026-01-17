@@ -1,6 +1,6 @@
 const WS_URL = "wss://chat.longapp.site/chat/chat";
-const username = "22130081@st.hcmuaf.edu.vn";
-const password = "minhhieu";
+const username = "duckute";
+const password = "ducvan";
 const targetUser = "22130030@st.hcmuaf.edu.vn";
 const page = 1;
 
@@ -61,19 +61,19 @@ function getMessages(targetUser: string, page: number) {
             // }
             // action: "onchat",
             // data: {
-            //     event: "GET_ROOM_CHAT_MES",
+            //     event: "REGISTER",
             //     data: {
-            //         name: "Nhom_10",
-            //         page:1
+            //         user: "nhom22i3",
+            //         pass: "123455"
             //     }
             // }
-            action: "onchat",
-            data: {
-                event: "CHECK_USER_EXIST",
-                data: {
-                    user: "long"
-                }
-            }
+            // action: "onchat",
+            // data: {
+            //     event: "CHECK_USER_EXIST",
+            //     data: {
+            //         user: "long"
+            //     }
+            // }
             //     action: "onchat",
             //     data: {
             //     event: "CREATE_ROOM",
@@ -97,10 +97,10 @@ function getMessages(targetUser: string, page: number) {
             //         "user": "22130030@st.hcmuaf.edu.vn"
             //     }
             // }
-            // action: "onchat",
-            // data: {
-            //     event: "GET_USER_LIST"
-            // }
+            action: "onchat",
+            data: {
+                event: "GET_USER_LIST"
+            }
         }));
     };
     // socket.send(JSON.stringify(

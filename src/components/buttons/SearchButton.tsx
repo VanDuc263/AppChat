@@ -4,10 +4,13 @@ import {faMagnifyingGlass} from "@fortawesome/free-solid-svg-icons"
 import {useState} from "react";
 import {useMessage} from "../../contexts/MessageContext";
 import {useCheckUserExist} from "../../hooks/useCheckUserExist";
+import {sendFriendRequest} from "../../services/friendService";
 
 export default function SearchButton(){
     const [text,setText] = useState("")
-    const {searchState,searchUser,resetSearch} = useMessage()
+    const {searchState,selectConversation,searchUser,resetSearch} = useMessage()
+
+    const me = localStorage.getItem("username");
 
 
     useCheckUserExist()
@@ -38,6 +41,19 @@ export default function SearchButton(){
             {searchState.loadding && <p className="search-result search-result-error">Đang tìm kiếm...</p>}
             {searchState.result === false && !searchState.loadding && <p className="search-result search-result--error">
                 User <span className="search-result-usname"> {text} </span> không tồn tại</p>}
+            {searchState.result === true && !searchState.loadding &&
+                (
+                    <div className="search-actions">
+                        <button onClick={() => sendFriendRequest(me!, text)}>
+                            Kết bạn
+                        </button>
+                        <button onClick={() => {selectConversation(text,1)}}>
+                            Nhắn tin
+                        </button>
+                    </div>
+                )
+
+            }
         </div>
     )
 }
