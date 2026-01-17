@@ -61,18 +61,6 @@ const RegisterPage = () => {
                         />
                     </div>
 
-                    {/*<div className="form-group">*/}
-                    {/*    <label htmlFor="email">Email</label>*/}
-                    {/*    <input*/}
-                    {/*        id="email"*/}
-                    {/*        type="email"*/}
-                    {/*        value={email}*/}
-                    {/*        onChange={(e) => setEmail(e.target.value)}*/}
-                    {/*        placeholder="example@email.com"*/}
-                    {/*        autoComplete="email"*/}
-                    {/*    />*/}
-                    {/*</div>*/}
-
                     <div className="form-group">
                         <label htmlFor="password">Mật khẩu</label>
                         <input

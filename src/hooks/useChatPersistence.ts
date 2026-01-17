@@ -27,7 +27,7 @@ export function useChatPersistence() {
     const keyMessages = (c: string) =>
         me ? `chat:messages:${me}:${c}` : null;
 
-    // 1️⃣ LOAD khi app mở
+    // 1️ LOAD khi app mở
     useEffect(() => {
         if (!me || !keyConvs || !keyCurrent) return;
 
@@ -54,19 +54,19 @@ export function useChatPersistence() {
         getConversationApi();
     }, [me]);
 
-    // 2️⃣ SAVE conversations
+    // 2️ SAVE conversations
     useEffect(() => {
         if (!me || !keyConvs) return;
         localStorage.setItem(keyConvs, JSON.stringify(conversations));
     }, [me, conversations]);
 
-    // 3️⃣ SAVE current conversation
+    // 3️ SAVE current conversation
     useEffect(() => {
         if (!me || !keyCurrent || !currentConversation) return;
         localStorage.setItem(keyCurrent, JSON.stringify(currentConversation));
     }, [me, currentConversation]);
 
-    // 4️⃣ SAVE messages
+    // 4️ SAVE messages
     useEffect(() => {
         if (!me || !currentConversation) return;
 
