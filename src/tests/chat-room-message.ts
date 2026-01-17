@@ -12,9 +12,9 @@ export function connectSocket(): WebSocket {
     if (!ws) {
         ws = new WebSocket(WS_URL);
 
-        ws.onopen = () => console.log("✅ WebSocket connected");
+        ws.onopen = () => console.log(" WebSocket connected");
         ws.onclose = () => {
-            console.log("❌ WebSocket closed");
+            console.log(" WebSocket closed");
             ws = null;
         };
         ws.onerror = (e) => console.error("WebSocket error:", e);
@@ -95,11 +95,11 @@ const socket = connectSocket();
 
 socket.addEventListener("message", (event) => {
     const res = JSON.parse(event.data);
-    console.log("📩 Received:", res);
+    console.log(" Received:", res);
 
     // Login OK → Join room
     if (res.event === "LOGIN" && res.status === "success") {
-        console.log("🔐 Login success → Join room");
+        console.log(" Login success → Join room");
         joinRoom(roomName);
     }
 
@@ -111,7 +111,7 @@ socket.addEventListener("message", (event) => {
 
     // Nhận tin nhắn room
     if (res.event === "GET_ROOM_CHAT_MES" || res.event === "SEND_CHAT") {
-        console.log("💬 Room messages:", res.data);
+        console.log(" Room messages:", res.data);
     }
 });
 

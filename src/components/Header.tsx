@@ -44,7 +44,7 @@ export default function Header() {
                 {/* RIGHT */}
                 <div className="header__right">
 
-                    {/* 🔔 Notification */}
+                    {/*  Notify */}
                     <div className="notify-wrapper" ref={dropdownRef}>
                         <button
                             className="icon-btn"
@@ -81,7 +81,7 @@ export default function Header() {
                     </div>
 
 
-                    {/* 🚪 Logout */}
+                    {/*  Logout */}
                     <button className="header__logout-btn" onClick={logout}>
                         <FontAwesomeIcon icon={faSignOutAlt} />
                         <span>Đăng xuất</span>

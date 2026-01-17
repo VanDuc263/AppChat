@@ -11,7 +11,7 @@ const LoginPage: React.FC = () => {
     const [pass, setPass] = useState("");
 
 
-    // ✅ đã đăng nhập → đi chat
+    // đã đăng nhập → đi chat
     if (authStatus === "authenticated") {
         return <Navigate to="/chat" replace />;
     }
@@ -82,7 +82,7 @@ const LoginPage: React.FC = () => {
                 </div>
             </div>
 
-            {/* 🔥 OVERLAY LOADING */}
+            {/* OVERLAY LOADING */}
             {authStatus === "checking" && (
                 <LoadingSpinner
                     text="Đang đăng nhập..."

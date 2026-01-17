@@ -268,7 +268,7 @@ function ChatAppContent() {
             const newRoom: Room = e.detail;
             console.log("CREATE_ROOM_SUCCESS:", newRoom);
             getConversationApi();
-            joinRoomApi(newRoom)
+            joinRoomApi(newRoom.name)
         };
 
         window.addEventListener("CREATE_ROOM_SUCCESS", handleCreateRoomSuccess);
@@ -464,7 +464,7 @@ function ChatAppContent() {
                                             name={conversation.name}
                                             actionTime={conversation.actionTime}
                                             type={conversation.type}
-                                            avatar={getAvatarByIdentity(conversation.name)}   // ✅ thêm dòng này
+                                            avatar={getAvatarByIdentity(conversation.name)}
                                             isActive={currentConversation === conversation.name}
                                         />
                                     ))}

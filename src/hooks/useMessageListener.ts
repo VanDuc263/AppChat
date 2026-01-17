@@ -23,16 +23,6 @@ export function useMessageListener() {
         if (!username) return;
 
         const handleMessage = (event: MessageEvent) => {
-            // const data = JSON.parse(event.data);
-            // console.log("[WS_RECEIVE]", data.event, data);
-            // if ((data.event === "GET_PEOPLE_CHAT_MES" || data.event === "GET_ROOM_CHAT_MES") && data.status === "success") {
-            //     const list = Array.isArray(data.data) ? data.data : [];
-            //     const decoded = list.map((m: any) => ({
-            //         ...m,
-            //         mes: safeDecode(m?.mes),
-            //     }));
-            //
-            //     handleMessageResponse(decoded);
             // 1) Raw payload từ WS
             const raw = event.data;
             // 2) Parse an toàn

@@ -13,7 +13,7 @@ export function connectSocket() {
 
     socket.onclose = () => {
         console.log("WebSocket closed");
-        socket = null; // ⭐ rất quan trọng
+        socket = null; // rất quan trọng
     };
 
     socket.onerror = (e) => {
