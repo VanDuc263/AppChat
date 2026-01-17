@@ -10,7 +10,7 @@ import ConversationItem from "../components/conversations/ConversationItem";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {ChangeEvent, useEffect, useRef, useState} from "react";
 import {faIcons, faImage, faPaperPlane, faPlus, faCircle,faVideo, faPaperclip, faFaceSmileBeam,faMoon, faSun} from "@fortawesome/free-solid-svg-icons";
-import {createRoomApi, joinRoomApi} from "../services/chatService";
+import {createRoomApi, getConversationApi, joinRoomApi} from "../services/chatService";
 import {uploadFileToCloudinary} from "../services/cloudinaryUpload";
 import EmojiPicker, {EmojiClickData} from "emoji-picker-react";
 import { useChatPersistence } from "../hooks/useChatPersistence";
@@ -120,6 +120,7 @@ function ChatAppContent() {
         }
 
         sendMessage(currentConversation, text);
+        getConversationApi();
         setText("");
     };
     const [uploading, setUploading] = useState(false);
@@ -255,10 +256,7 @@ function ChatAppContent() {
         const found = conversations.find(
             (c) => c.name === roomNameInput
         );
-        if (!found) {
-            alert("Nhóm không tồn tại");
-            return;
-        }
+
         joinRoomApi(roomNameInput);
         selectConversation(roomNameInput, 1);
         setShowJoinRoom(false);
@@ -269,6 +267,8 @@ function ChatAppContent() {
         const handleCreateRoomSuccess = (e: any) => {
             const newRoom: Room = e.detail;
             console.log("CREATE_ROOM_SUCCESS:", newRoom);
+            getConversationApi();
+            joinRoomApi(newRoom)
         };
 
         window.addEventListener("CREATE_ROOM_SUCCESS", handleCreateRoomSuccess);

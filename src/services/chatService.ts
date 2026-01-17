@@ -199,7 +199,6 @@ export function checkUserExistApi(user : string) {
     const socket = getSocket();
     if (!socket) return;
 
-    console.log(user)
     const sendCheckUserExist = () => {
         socket.send(
             JSON.stringify({

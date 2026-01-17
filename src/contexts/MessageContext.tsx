@@ -140,6 +140,7 @@ export function MessageProvider({ children }: { children: ReactNode }) {
         const isRoom = isRoomConversation(name);
 
         if (isRoom) {
+            console.log('is room')
             getRoomMessageApi(name, pageParam);
         } else {
             getMessageApi(name, pageParam);
