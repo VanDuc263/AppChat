@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { getSocket } from "../services/socket";
 import { useMessage } from "../contexts/MessageContext";
+import {getConversationApi} from "../services/chatService";
 
 const safeDecode = (s: any) => {
     if (typeof s !== "string") return s;
@@ -39,8 +40,6 @@ export function useMessageListener() {
             try {
                 data = typeof raw === "string" ? JSON.parse(raw) : raw;
             } catch (err) {
-                console.groupCollapsed("%c[WS_RECEIVE] Non-JSON payload", "color:#ff6b6b;font-weight:bold;");
-                console.log("raw =", raw);
                 console.error("parse error =", err);
                 console.groupEnd();
                 return;
@@ -48,14 +47,8 @@ export function useMessageListener() {
 
             // 3) Log FULL JSON (raw + parsed + pretty)
             const evt = data?.event ?? data?.data?.event ?? "UNKNOWN_EVENT";
-            console.groupCollapsed(
-                `%c[WS_RECEIVE] ${evt} | status=${data?.status ?? "?"}`,
-                "color:#4dabf7;font-weight:bold;"
-            );
-            console.log("raw string =", raw);
-            console.log("parsed object =", data);
+
             try {
-                console.log("pretty JSON =\n", JSON.stringify(data, null, 2));
             } catch {}
             console.groupEnd();
 
@@ -81,6 +74,7 @@ export function useMessageListener() {
             }
 
             if (data.event === "GET_USER_LIST" && data.status === "success") {
+                console.log('get user list')
                 const list = Array.isArray(data.data) ? data.data : [];
                 replaceConversations(list);
             }
@@ -89,6 +83,7 @@ export function useMessageListener() {
                 setCurrentOnline(res)
             }
             if (data.event === "SEND_CHAT") {
+                getConversationApi();
                 addMessage({
                     id: Date.now(),
                     name: data.data.name,

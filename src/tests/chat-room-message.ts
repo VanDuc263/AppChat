@@ -1,7 +1,7 @@
 const WS_URL = "wss://chat.longapp.site/chat/chat";
 const username = "22130081@st.hcmuaf.edu.vn";
 const password = "minhhieu";
-const roomName = "Nhom_10";
+const roomName = "nhom's duc";
 const page = 1;
 
 let ws: WebSocket | null = null;
@@ -47,17 +47,17 @@ function login(user: string, pass: string) {
 /* ================= JOIN ROOM ================= */
 
 function joinRoom(roomName: string) {
-    // const socket = connectSocket();
-    //
-    // socket.send(JSON.stringify({
-    //     action: "onchat",
-    //     data: {
-    //         event: "JOIN_ROOM",
-    //         data: {
-    //             name: roomName
-    //         }
-    //     }
-    // }));
+    const socket = connectSocket();
+
+    socket.send(JSON.stringify({
+        action: "onchat",
+        data: {
+            event: "CREATE_ROOM",
+            data: {
+                name: "DWAĐƯHAUDHƯA"
+            }
+        }
+    }));
 }
 
 /* ================= GET ROOM MESSAGES ================= */
