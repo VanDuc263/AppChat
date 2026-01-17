@@ -29,16 +29,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const [authStatus,setAuthStatus] = useState<AuthStatus>("checking")
     connectSocket()
 
-    useEffect(() => {
-        const hasReLogin = localStorage.getItem("re_login")
-        const hasUser = localStorage.getItem("username")
-
-        if(hasUser && hasReLogin){
-            setAuthStatus("checking")
-        }else{
-            setAuthStatus("unauthenticated")
-        }
-    }, []);
 
     const login = (username: string, password: string) => {
         setAuthStatus("checking");

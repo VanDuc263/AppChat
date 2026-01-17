@@ -31,6 +31,9 @@ export function useAuthSocketListener() {
     const { setUser, setAuthStatus, authStatus } = useAuth();
     const [retryCount, setRetryCount] = useState(0);
 
+    const hasSuccessRef = useRef(false);
+    const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
     const forceRelogin = () => {
         console.warn("⛔ Auth timeout → force login");
 
@@ -39,32 +42,33 @@ export function useAuthSocketListener() {
 
         hasSuccessRef.current = false;
         setRetryCount(0);
-
         setAuthStatus("unauthenticated");
     };
 
-
-    const hasSuccessRef = useRef(false);
-    const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
     useEffect(() => {
         const socket = getSocket();
-        if (!socket) return;
+        console.log("🎧 listener socket:", socket);
 
         const username = localStorage.getItem("username");
         const reLoginCode = localStorage.getItem("re_login");
 
-        // ❌ Không có thông tin login → unauth
-        if (!username && !reLoginCode) {
-            setAuthStatus("unauthenticated");
-            return;
-        }
-
-
+        /* =====================
+           1️⃣ SOCKET LISTENER (LUÔN LUÔN GẮN)
+        ====================== */
         const onMessage = (ev: MessageEvent) => {
             try {
                 const res = JSON.parse(ev.data);
+                console.log("📩 SOCKET:", res);
 
+                // ===== REGISTER =====
+                if (res.event === "REGISTER") {
+                    window.dispatchEvent(
+                        new CustomEvent("REGISTER_RESULT", { detail: res })
+                    );
+                    return;
+                }
+
+                // ===== LOGIN / RE_LOGIN SUCCESS =====
                 if (
                     (res.event === "LOGIN" || res.event === "RE_LOGIN") &&
                     res.status === "success"
@@ -72,28 +76,24 @@ export function useAuthSocketListener() {
                     console.log("✅ Auth success");
 
                     hasSuccessRef.current = true;
-                    if (retryTimeoutRef.current) {
-                        clearTimeout(retryTimeoutRef.current);
-                    }
+                    retryTimeoutRef.current &&
+                    clearTimeout(retryTimeoutRef.current);
 
                     const newCode = res.data.RE_LOGIN_CODE;
                     localStorage.setItem("re_login", newCode);
 
-                    setUser({ username, code: newCode });
+                    setUser({ username: username!, code: newCode });
                     setAuthStatus("authenticated");
                     getConversationApi();
                 }
 
+                // ===== LOGIN / RE_LOGIN ERROR =====
                 if (
                     res.status === "error" &&
                     (res.event === "LOGIN" || res.event === "RE_LOGIN")
                 ) {
                     console.error("❌ Auth error");
-
-                    localStorage.removeItem("username");
-                    localStorage.removeItem("re_login");
-
-                    setAuthStatus("unauthenticated");
+                    forceRelogin();
                 }
             } catch (err) {
                 console.error("Socket parse error", err);
@@ -102,36 +102,35 @@ export function useAuthSocketListener() {
 
         socket.addEventListener("message", onMessage);
 
-        /* =======================
-           2️⃣ LOGIN / RE-LOGIN LOGIC
-        ======================== */
+        /* =====================
+           2️⃣ AUTH / RELOGIN LOGIC
+        ====================== */
         const attemptRelogin = async () => {
+            if (!username || !reLoginCode) {
+                setAuthStatus("unauthenticated");
+                return;
+            }
+
             if (hasSuccessRef.current) return;
 
             if (retryCount >= MAX_RETRY) {
                 console.error("❌ Max retry reached");
-                setAuthStatus("unauthenticated");
+                forceRelogin();
                 return;
             }
 
             try {
                 console.log("⏳ Waiting socket...");
-                try {
-                    await waitForSocketOpen(socket);
-                } catch {
-                    forceRelogin();
-                    return;
-                }
+                await waitForSocketOpen(socket);
 
                 console.log(`📡 RE_LOGIN attempt ${retryCount + 1}`);
-                reLoginApi(username!, reLoginCode!);
+                reLoginApi(username, reLoginCode);
 
                 retryTimeoutRef.current = setTimeout(() => {
                     setRetryCount(prev => prev + 1);
                 }, RETRY_DELAY);
-            } catch (err) {
-                console.error("❌ Socket not connected", err);
-                setAuthStatus("unauthenticated");
+            } catch {
+                forceRelogin();
             }
         };
 
@@ -139,14 +138,13 @@ export function useAuthSocketListener() {
             attemptRelogin();
         }
 
-        /* =======================
+        /* =====================
            CLEANUP
-        ======================== */
+        ====================== */
         return () => {
             socket.removeEventListener("message", onMessage);
-            if (retryTimeoutRef.current) {
-                clearTimeout(retryTimeoutRef.current);
-            }
+            retryTimeoutRef.current &&
+            clearTimeout(retryTimeoutRef.current);
         };
     }, [authStatus, retryCount, setAuthStatus, setUser]);
 }

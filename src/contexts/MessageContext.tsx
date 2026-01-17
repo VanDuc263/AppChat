@@ -164,9 +164,7 @@ export function MessageProvider({ children }: { children: ReactNode }) {
             loadding : false,
             result : status,
         })
-        if(status){
-            selectConversation(currentUsernameSearchRef.current,1)
-        }
+        if(!status) return
 
     }
     const resetSearch = () => {

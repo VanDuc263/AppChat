@@ -38,7 +38,10 @@
     letter-spacing: 1px;
 }
 
-
+.header__right{
+    display: flex;
+    align-items: center;
+}
 .header__logout-btn {
     background: rgba(255, 255, 255, 0.25);
     border: 1.5px solid rgba(255, 255, 255, 0.3);
@@ -58,3 +61,95 @@
     transform: translateY(-2px);
 }
 
+.icon-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 18px;
+    position: relative;
+    cursor: pointer;
+    margin-right: 12px;
+}
+
+.badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: red;
+    color: white;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 50%;
+}
+
+.notify-wrapper {
+    position: relative;
+}
+.dropdown {
+    position: absolute;
+    right: -12px;
+    top: 42px;
+    width: 240px;
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 8px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+    animation: dropdownFade 0.2s ease;
+}
+
+@keyframes dropdownFade {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    border-radius: 10px;
+    transition: background 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background: #f4f6fb;
+}
+
+.username {
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.accept-btn {
+    background: linear-gradient(135deg, #4caf50, #43a047);
+    border: none;
+    color: white;
+    border-radius: 16px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.accept-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px rgba(76, 175, 80, 0.35);
+}
+
+.empty {
+    text-align: center;
+    font-size: 14px;
+    padding: 12px;
+    color: #777;
+}
