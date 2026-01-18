@@ -6,6 +6,7 @@ import { faFileArrowDown,faCircleChevronDown } from "@fortawesome/free-solid-svg
 import {useEffect, useRef} from "react";
 const IMAGE_PREFIX = "__IMG__:";
 const VIDEO_PREFIX = "__VID__:";
+const AUDIO_PREFIX = "__AUD__:";
 const FILE_PREFIX = "__FILE__:";
 const STICKER_PREFIX = "__STK__:";
 
@@ -55,7 +56,24 @@ function renderMessageContent(text: string) {
             />
         );
     }
+    if (typeof text === "string" && text.startsWith(AUDIO_PREFIX)) {
+        const url = text.slice(AUDIO_PREFIX.length).trim();
 
+        if (!url) {
+            return <span style={{ color: "#fff" }}>[Voice lỗi: thiếu link]</span>;
+        }
+
+        return (
+            <div style={{ width: 280, maxWidth: "100%" }}>
+                <audio
+                    src={url}
+                    controls
+                    preload="metadata"
+                    style={{ width: "100%", display: "block" }}
+                />
+            </div>
+        );
+    }
     if (typeof text === "string" && text.startsWith(FILE_PREFIX)) {
         const payload = text.slice(FILE_PREFIX.length).trim();
         const [url, encodedName] = payload.split("||");
