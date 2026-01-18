@@ -13,8 +13,8 @@ import {faIcons, faImage, faPaperPlane, faPlus, faCircle, faVideo, faPaperclip, 
 import {createRoomApi, getConversationApi, joinRoomApi} from "../services/chatService";
 import {uploadFileToCloudinary} from "../services/cloudinaryUpload";
 import EmojiPicker, {EmojiClickData} from "emoji-picker-react";
-import { useChatPersistence } from "../hooks/useChatPersistence";
-import { useTheme } from "../contexts/ThemeContext";
+import {useChatPersistence} from "../hooks/useChatPersistence";
+import {useTheme} from "../contexts/ThemeContext";
 
 import SearchButton from "../components/buttons/SearchButton";
 import SocketOverlay from "../components/SocketOverlay";
@@ -39,11 +39,11 @@ function ChatAppContent() {
 
     const imageInputRef = useRef<HTMLInputElement | null>(null);
     const videoInputRef = useRef<HTMLInputElement | null>(null);
-    const fileInputRef  = useRef<HTMLInputElement | null>(null);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const handlePickImage = () => imageInputRef.current?.click();
     const handlePickVideo = () => videoInputRef.current?.click();
-    const handlePickFile  = () => fileInputRef.current?.click();
+    const handlePickFile = () => fileInputRef.current?.click();
 
 
     /*CREATE ROOM STATE*/
@@ -60,11 +60,11 @@ function ChatAppContent() {
     const emojiWrapRef = useRef<HTMLDivElement | null>(null);
 
     /* ===== THEME DARK/LIGHT ===== */
-    const { theme, toggleTheme } = useTheme();
+    const {theme, toggleTheme} = useTheme();
 
     const IMAGE_PREFIX = "__IMG__:";
     const VIDEO_PREFIX = "__VID__:";
-    const FILE_PREFIX  = "__FILE__:";
+    const FILE_PREFIX = "__FILE__:";
     const AUDIO_PREFIX = "__AUD__:";
     const STICKER_PREFIX = "__STK__:";
     const RECENT_STICKER_KEY = "recent_stickers_v1";
@@ -95,7 +95,8 @@ function ChatAppContent() {
     useEffect(() => {
         try {
             localStorage.setItem(RECENT_STICKER_KEY, JSON.stringify(recentStickerKeys));
-        } catch {}
+        } catch {
+        }
     }, [recentStickerKeys]);
 
     useEffect(() => {
@@ -239,7 +240,8 @@ function ChatAppContent() {
             setAvatarUrl(url);
             try {
                 localStorage.setItem(getAvatarKey(), url);
-            } catch {}
+            } catch {
+            }
 
             closeAvatarModal();
         } catch (err: any) {
@@ -428,8 +430,8 @@ function ChatAppContent() {
             const recorder = new MediaRecorder(
                 stream,
                 mimeType
-                    ? { mimeType, audioBitsPerSecond: 24000 }
-                    : { audioBitsPerSecond: 24000 }
+                    ? {mimeType, audioBitsPerSecond: 24000}
+                    : {audioBitsPerSecond: 24000}
             );
             voiceRecorderRef.current = recorder;
             voiceChunksRef.current = [];
@@ -439,7 +441,7 @@ function ChatAppContent() {
             };
 
             recorder.onstop = () => {
-                const blob = new Blob(voiceChunksRef.current, { type: recorder.mimeType || "audio/webm" });
+                const blob = new Blob(voiceChunksRef.current, {type: recorder.mimeType || "audio/webm"});
 
                 if (autoSendRef.current) {
                     autoSendRef.current = false;
@@ -462,7 +464,7 @@ function ChatAppContent() {
                             setVoiceError("");
 
                             const ext = blob.type.includes("ogg") ? "ogg" : "webm";
-                            const file = new File([blob], `voice_${Date.now()}.${ext}`, { type: blob.type || "audio/webm" });
+                            const file = new File([blob], `voice_${Date.now()}.${ext}`, {type: blob.type || "audio/webm"});
 
                             const url = await uploadFileToCloudinary(file, setVoiceUploadProgress);
                             sendMessage(currentConversation, `${AUDIO_PREFIX}${url}`);
@@ -483,7 +485,7 @@ function ChatAppContent() {
                 setVoicePreviewUrl(url);
             };
 
-            // ✅ BẮT ĐẦU GHI ÂM
+            // BẮT ĐẦU GHI ÂM
             recorder.start();
             setIsRecording(true);
             setVoiceSeconds(0);
@@ -507,7 +509,8 @@ function ChatAppContent() {
 
         try {
             voiceRecorderRef.current?.stop();
-        } catch {}
+        } catch {
+        }
 
         setIsRecording(false);
 
@@ -537,7 +540,7 @@ function ChatAppContent() {
 
         try {
             const ext = voiceBlob.type.includes("ogg") ? "ogg" : "webm";
-            const file = new File([voiceBlob], `voice_${Date.now()}.${ext}`, { type: voiceBlob.type || "audio/webm" });
+            const file = new File([voiceBlob], `voice_${Date.now()}.${ext}`, {type: voiceBlob.type || "audio/webm"});
 
             const url = await uploadFileToCloudinary(file, setVoiceUploadProgress);
             sendMessage(currentConversation, `${AUDIO_PREFIX}${url}`);
@@ -555,7 +558,8 @@ function ChatAppContent() {
             try {
                 if (isRecording) stopVoiceRecord();
                 resetVoiceState();
-            } catch {}
+            } catch {
+            }
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -607,16 +611,16 @@ function ChatAppContent() {
                                     aria-label="Đổi ảnh đại diện"
                                 >
                                     {avatarUrl ? (
-                                        <img className="sidebar__avatar-img" src={avatarUrl} alt="avatar" />
+                                        <img className="sidebar__avatar-img" src={avatarUrl} alt="avatar"/>
                                     ) : (
                                         <span className="sidebar__avatar-fallback">
-          {(user?.username || "U").slice(0, 1).toUpperCase()}
-        </span>
+                                      {(user?.username || "U").slice(0, 1).toUpperCase()}
+                                    </span>
                                     )}
 
                                     <span className="sidebar__avatar-badge">
-        <FontAwesomeIcon icon={faImage} />
-      </span>
+                                    <FontAwesomeIcon icon={faImage}/>
+                                    </span>
                                 </button>
 
                                 <div className="sidebar__title-row">
@@ -633,7 +637,7 @@ function ChatAppContent() {
                                 </div>
                             </div>
 
-                        <div className="sidebar__search">
+                            <div className="sidebar__search">
 
                                 {/*input search*/}
                                 <SearchButton/>
@@ -754,7 +758,7 @@ function ChatAppContent() {
                                                     onClick={() => handleStickerClick(key)}
                                                     title={key.replace("./", "")}
                                                 >
-                                                    <img src={src} alt={key} />
+                                                    <img src={src} alt={key}/>
                                                 </button>
                                             );
                                         })}
@@ -773,7 +777,7 @@ function ChatAppContent() {
                                     title="Gửi ảnh"
                                 />
 
-                                    <FontAwesomeIcon
+                                <FontAwesomeIcon
                                     className="toolbar-icon"
                                     icon={faIcons}
                                     title="Sticker"
@@ -817,7 +821,7 @@ function ChatAppContent() {
                                     <span className="upload-progress">{Math.round(uploadProgress)}%</span>
                                 )}
                                 {voiceUploading && (
-                                 <span className="upload-progress">Voice {Math.round(voiceUploadProgress)}%</span>
+                                    <span className="upload-progress">Voice {Math.round(voiceUploadProgress)}%</span>
                                 )}
                             </div>
 
@@ -865,14 +869,15 @@ function ChatAppContent() {
 
                         <div className="upload-preview">
                             {getKind(pendingFile) === "image" && previewUrl && (
-                                <img src={previewUrl} alt="preview" />
+                                <img src={previewUrl} alt="preview"/>
                             )}
 
                             {getKind(pendingFile) === "video" && previewUrl && (
-                                <video src={previewUrl} controls style={{ maxWidth: 320, width: "100%", borderRadius: 12 }} />
+                                <video src={previewUrl} controls
+                                       style={{maxWidth: 320, width: "100%", borderRadius: 12}}/>
                             )}
                             {getKind(pendingFile) === "file" && (
-                                <div style={{ padding: 12 }}>Không có preview cho file này.</div>
+                                <div style={{padding: 12}}>Không có preview cho file này.</div>
                             )}
                         </div>
 
@@ -940,7 +945,7 @@ function ChatAppContent() {
 
                         <div className="upload-preview">
                             {avatarPreviewUrl && (
-                                <img src={avatarPreviewUrl} alt="avatar-preview" />
+                                <img src={avatarPreviewUrl} alt="avatar-preview"/>
                             )}
                         </div>
 
@@ -954,23 +959,29 @@ function ChatAppContent() {
                                 <div className="modal upload-modal">
                                     <h3>{isRecording ? "Đang ghi âm..." : (voiceBlob ? "Gửi ghi âm?" : "Ghi âm")}</h3>
 
-                                    <div className="upload-preview" style={{ padding: 12, width: "100%" }}>
-                                        <div style={{ fontSize: 24, fontWeight: 700, textAlign: "center", marginBottom: 10 }}>
+                                    <div className="upload-preview" style={{padding: 12, width: "100%"}}>
+                                        <div style={{
+                                            fontSize: 24,
+                                            fontWeight: 700,
+                                            textAlign: "center",
+                                            marginBottom: 10
+                                        }}>
                                             {formatMMSS(voiceSeconds)}
                                         </div>
 
                                         {!isRecording && voicePreviewUrl && (
-                                            <audio controls preload="metadata" src={voicePreviewUrl} style={{ width: "100%" }} />
+                                            <audio controls preload="metadata" src={voicePreviewUrl}
+                                                   style={{width: "100%"}}/>
                                         )}
 
                                         {voiceUploading && (
-                                            <div style={{ marginTop: 10, textAlign: "center" }}>
+                                            <div style={{marginTop: 10, textAlign: "center"}}>
                                                 Đang upload: {Math.round(voiceUploadProgress)}%
                                             </div>
                                         )}
 
                                         {voiceError && (
-                                            <div style={{ marginTop: 10, color: "red", textAlign: "center" }}>
+                                            <div style={{marginTop: 10, color: "red", textAlign: "center"}}>
                                                 {voiceError}
                                             </div>
                                         )}
@@ -980,11 +991,13 @@ function ChatAppContent() {
                                         <button onClick={closeVoiceModal} disabled={voiceUploading}>Hủy</button>
 
                                         {isRecording ? (
-                                            <button className="primary" onClick={stopAndSendVoice} disabled={voiceUploading}>
+                                            <button className="primary" onClick={stopAndSendVoice}
+                                                    disabled={voiceUploading}>
                                                 Dừng
                                             </button>
                                         ) : (
-                                            <button className="primary" onClick={confirmSendVoice} disabled={!voiceBlob || voiceUploading}>
+                                            <button className="primary" onClick={confirmSendVoice}
+                                                    disabled={!voiceBlob || voiceUploading}>
                                                 Gửi
                                             </button>
                                         )}
