@@ -17,6 +17,7 @@ import { useChatPersistence } from "../hooks/useChatPersistence";
 import { useTheme } from "../contexts/ThemeContext";
 
 import SearchButton from "../components/buttons/SearchButton";
+import SocketOverlay from "../components/SocketOverlay";
 
 interface Room {
     id: number;
@@ -268,7 +269,7 @@ function ChatAppContent() {
             const newRoom: Room = e.detail;
             console.log("CREATE_ROOM_SUCCESS:", newRoom);
             getConversationApi();
-            joinRoomApi(newRoom)
+            joinRoomApi(newRoom.name)
         };
 
         window.addEventListener("CREATE_ROOM_SUCCESS", handleCreateRoomSuccess);
@@ -746,6 +747,7 @@ function ChatAppContent() {
 export default function App() {
     return (
         <MessageProvider>
+            <SocketOverlay/>
             <ChatAppContent/>
         </MessageProvider>
     );
