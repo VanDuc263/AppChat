@@ -2,7 +2,7 @@
 
 
 🚀 Demo (Vercel):
-https://app-chat-9fff.vercel.app/
+https://app-chat-jwse.vercel.app/
 
 This is the front-end of AppChat Web, built using ReactJS and TypeScript.
 
