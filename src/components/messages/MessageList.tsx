@@ -88,7 +88,6 @@ function renderMessageContent(text: string) {
     }
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const parts = text.split(urlRegex);
-    // return <>{text}</>;
     // CLICK LINK //
     return (
         <>

@@ -18,7 +18,7 @@ import { db } from "../firebase";
 export const sendFriendRequest = async (from: string, to: string) => {
     if (from === to) return;
 
-    // ❗ tránh gửi trùng
+    //  tránh gửi trùng
     const q = query(
         collection(db, "friend_requests"),
         where("from", "==", from),

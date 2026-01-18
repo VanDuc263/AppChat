@@ -465,7 +465,7 @@ function ChatAppContent() {
                                             name={conversation.name}
                                             actionTime={conversation.actionTime}
                                             type={conversation.type}
-                                            avatar={getAvatarByIdentity(conversation.name)}   // ✅ thêm dòng này
+                                            avatar={getAvatarByIdentity(conversation.name)}
                                             isActive={currentConversation === conversation.name}
                                         />
                                     ))}
