@@ -11,6 +11,7 @@ let reconnectTimer: any = null;
 
 const RECONNECT_DELAY = 3000;
 
+
 let listeners: ((status: SocketStatus) => void)[] = [];
 
 function notify() {
@@ -40,6 +41,9 @@ export function connectSocket() {
         console.log("✅ WebSocket connected");
         status = "connected";
         notify();
+        
+        window.dispatchEvent(new Event("SOCKET_CONNECTED"));
+
     };
 
     socket.onclose = () => {

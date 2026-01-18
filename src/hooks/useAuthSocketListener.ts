@@ -46,21 +46,19 @@ export function useAuthSocketListener() {
     };
 
     useEffect(() => {
-        const socket = getSocket();
-        console.log("🎧 listener socket:", socket);
+        let socket: WebSocket | null = null;
 
         const username = localStorage.getItem("username");
         const reLoginCode = localStorage.getItem("re_login");
 
         /* =====================
-           1 SOCKET LISTENER (LUÔN LUÔN GẮN)
+           SOCKET MESSAGE HANDLER
         ====================== */
         const onMessage = (ev: MessageEvent) => {
             try {
                 const res = JSON.parse(ev.data);
                 console.log(" SOCKET:", res);
 
-                // ===== REGISTER =====
                 if (res.event === "REGISTER") {
                     window.dispatchEvent(
                         new CustomEvent("REGISTER_RESULT", { detail: res })
@@ -68,7 +66,6 @@ export function useAuthSocketListener() {
                     return;
                 }
 
-                // ===== LOGIN / RE_LOGIN SUCCESS =====
                 if (
                     (res.event === "LOGIN" || res.event === "RE_LOGIN") &&
                     res.status === "success"
@@ -87,12 +84,10 @@ export function useAuthSocketListener() {
                     getConversationApi();
                 }
 
-                // ===== LOGIN / RE_LOGIN ERROR =====
                 if (
                     res.status === "error" &&
                     (res.event === "LOGIN" || res.event === "RE_LOGIN")
                 ) {
-                    console.error(" Auth error");
                     forceRelogin();
                 }
             } catch (err) {
@@ -100,10 +95,46 @@ export function useAuthSocketListener() {
             }
         };
 
-        socket.addEventListener("message", onMessage);
+        /* =====================
+           ATTACH / DETACH
+        ====================== */
+        const attach = () => {
+            socket = getSocket();
+            if (!socket) return;
+
+            console.log("🔗 attach socket listener");
+            socket.addEventListener("message", onMessage);
+        };
+
+        const detach = () => {
+            if (!socket) return;
+
+            console.log("🧹 detach socket listener");
+            socket.removeEventListener("message", onMessage);
+        };
 
         /* =====================
-           2️ AUTH / RELOGIN LOGIC
+           RECONNECT HANDLER
+        ====================== */
+        const onSocketConnected = () => {
+            console.log("🔁 SOCKET_CONNECTED");
+
+            detach();
+            attach();
+
+            // 🔥 trigger re-login khi reconnect
+            if (authStatus === "authenticated") {
+                hasSuccessRef.current = false;
+                setRetryCount(0);
+                setAuthStatus("checking");
+            }
+        };
+
+        attach();
+        window.addEventListener("SOCKET_CONNECTED", onSocketConnected);
+
+        /* =====================
+           AUTH CHECKING
         ====================== */
         const attemptRelogin = async () => {
             if (!username || !reLoginCode) {
@@ -114,16 +145,12 @@ export function useAuthSocketListener() {
             if (hasSuccessRef.current) return;
 
             if (retryCount >= MAX_RETRY) {
-                console.error(" Max retry reached");
                 forceRelogin();
                 return;
             }
 
             try {
-                console.log(" Waiting socket...");
-                await waitForSocketOpen(socket);
-
-                console.log(` RE_LOGIN attempt ${retryCount + 1}`);
+                await waitForSocketOpen(socket!);
                 reLoginApi(username, reLoginCode);
 
                 retryTimeoutRef.current = setTimeout(() => {
@@ -138,13 +165,11 @@ export function useAuthSocketListener() {
             attemptRelogin();
         }
 
-        /* =====================
-           CLEANUP
-        ====================== */
         return () => {
-            socket.removeEventListener("message", onMessage);
+            detach();
+            window.removeEventListener("SOCKET_CONNECTED", onSocketConnected);
             retryTimeoutRef.current &&
             clearTimeout(retryTimeoutRef.current);
         };
-    }, [authStatus, retryCount, setAuthStatus, setUser]);
+    }, [authStatus, retryCount]);
 }
