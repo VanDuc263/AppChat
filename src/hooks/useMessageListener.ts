@@ -23,6 +23,7 @@ export function useMessageListener() {
         if (!username) return;
 
         const handleMessage = (event: MessageEvent) => {
+            console.log("handle message")
             // 1) Raw payload từ WS
             const raw = event.data;
             // 2) Parse an toàn
@@ -34,14 +35,12 @@ export function useMessageListener() {
                 console.groupEnd();
                 return;
             }
-
             // 3) Log FULL JSON (raw + parsed + pretty)
             const evt = data?.event ?? data?.data?.event ?? "UNKNOWN_EVENT";
 
             try {
             } catch {}
             console.groupEnd();
-
             if ((data.event === "GET_PEOPLE_CHAT_MES" || data.event === "GET_ROOM_CHAT_MES") && data.status === "success") {
                 console.log("ROOM raw data.data =", data.data);
                 const isRoom = data.event === "GET_ROOM_CHAT_MES";

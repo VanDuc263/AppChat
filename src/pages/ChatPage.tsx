@@ -8,7 +8,7 @@ import Header from "../components/Header";
 import "../styles/base.css";
 import ConversationItem from "../components/conversations/ConversationItem";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {ChangeEvent, useEffect, useRef, useState} from "react";
+import React, {ChangeEvent, useEffect, useRef, useState} from "react";
 import {faIcons, faImage, faPaperPlane, faPlus, faCircle, faVideo, faPaperclip, faFaceSmileBeam, faMoon, faSun, faMicrophone, faStop} from "@fortawesome/free-solid-svg-icons";
 import {createRoomApi, getConversationApi, joinRoomApi} from "../services/chatService";
 import {uploadFileToCloudinary} from "../services/cloudinaryUpload";
@@ -19,6 +19,7 @@ import {useTheme} from "../contexts/ThemeContext";
 import SearchButton from "../components/buttons/SearchButton";
 import SocketOverlay from "../components/SocketOverlay";
 import RoomMemberInfo from "../components/RoomMemberInfo";
+import {useSocketReady} from "../hooks/useSocketReady";
 
 interface Room {
     id: number;
@@ -27,8 +28,15 @@ interface Room {
     userList: any[];
     chatData: any[];
 }
-
 function ChatAppContent() {
+
+    const socketReady = useSocketReady();
+
+    if (!socketReady) return null;
+
+    return <ChatCore />;
+}
+function ChatCore() {
     useChatPersistence();
     useMessageListener();
     useOnlineChecker();

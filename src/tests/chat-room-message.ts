@@ -1,8 +1,8 @@
 const WS_URL = "wss://chat.longapp.site/chat/chat";
-const username = "22130050";
-const password = "123";
+const username = "22130081@st.hcmuaf.edu.vn";
+const password = "minhhieu";
 const roomName = "Nhom10";
-const page = 1;
+const page = 2;
 
 let ws: WebSocket | null = null;
 
@@ -54,7 +54,7 @@ function joinRoom(roomName: string) {
         data: {
             event: "GET_ROOM_CHAT_MES",
             data: {
-                name: roomName,
+                name: "36",
                 page
             }
 
