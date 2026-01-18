@@ -13,7 +13,7 @@ const safeDecode = (s: any) => {
 };
 
 export function useMessageListener() {
-    const { addMessage, replaceMessages, replaceConversations,handleMessageResponse,setCurrentOnline, currentConversation, } = useMessage();
+    const { addMessage, replaceMessages, replaceConversations,handleMessageResponse,setCurrentOnline, currentConversation, setRoomMember} = useMessage();
 
     useEffect(() => {
         const socket = getSocket();
@@ -45,7 +45,10 @@ export function useMessageListener() {
             if ((data.event === "GET_PEOPLE_CHAT_MES" || data.event === "GET_ROOM_CHAT_MES") && data.status === "success") {
                 console.log("ROOM raw data.data =", data.data);
                 const isRoom = data.event === "GET_ROOM_CHAT_MES";
-
+                if(isRoom){
+                    const userList = data.data.userList
+                    setRoomMember(userList.length,userList)
+                }
                 const list = isRoom
                     ? (Array.isArray(data?.data?.chatData) ? data.data.chatData : [])
                     : (Array.isArray(data?.data) ? data.data : []);

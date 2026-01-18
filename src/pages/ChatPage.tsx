@@ -18,6 +18,7 @@ import {useTheme} from "../contexts/ThemeContext";
 
 import SearchButton from "../components/buttons/SearchButton";
 import SocketOverlay from "../components/SocketOverlay";
+import RoomMemberInfo from "../components/RoomMemberInfo";
 
 interface Room {
     id: number;
@@ -33,7 +34,7 @@ function ChatAppContent() {
     useOnlineChecker();
 
     const {user} = useAuth();
-    const {sendMessage, currentConversation, selectConversation, conversations, currentOnline} = useMessage();
+    const {sendMessage, currentConversation, selectConversation, conversations,currentOnline,isRoom,totalMember,members} = useMessage();
 
 
     const imageInputRef = useRef<HTMLInputElement | null>(null);
@@ -690,11 +691,9 @@ function ChatAppContent() {
                         <div className="content-head">
                             <span>{currentConversation}</span>
 
-                            {currentOnline &&
-                                <FontAwesomeIcon icon={faCircle} className="user-status user-status--online"/>}
-                            {!currentOnline &&
-                                <FontAwesomeIcon icon={faCircle} className="user-status user-status--offline"/>}
-
+                            {currentOnline && !isRoom &&  <FontAwesomeIcon icon={faCircle} className="user-status user-status--online"/>}
+                            {!currentOnline && !isRoom &&  <FontAwesomeIcon icon={faCircle} className="user-status user-status--offline"/>}
+                            <RoomMemberInfo/>
                         </div>
 
                         <MessageList/>

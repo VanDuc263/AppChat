@@ -1,7 +1,7 @@
 const WS_URL = "wss://chat.longapp.site/chat/chat";
-const username = "22130081@st.hcmuaf.edu.vn";
-const password = "minhhieu";
-const roomName = "nhom's duc";
+const username = "22130050";
+const password = "123";
+const roomName = "Nhom10";
 const page = 1;
 
 let ws: WebSocket | null = null;
@@ -52,10 +52,12 @@ function joinRoom(roomName: string) {
     socket.send(JSON.stringify({
         action: "onchat",
         data: {
-            event: "CREATE_ROOM",
+            event: "GET_ROOM_CHAT_MES",
             data: {
-                name: "DWAĐƯHAUDHƯA"
+                name: roomName,
+                page
             }
+
         }
     }));
 }
@@ -95,7 +97,6 @@ const socket = connectSocket();
 
 socket.addEventListener("message", (event) => {
     const res = JSON.parse(event.data);
-    console.log(" Received:", res);
 
     // Login OK → Join room
     if (res.event === "LOGIN" && res.status === "success") {

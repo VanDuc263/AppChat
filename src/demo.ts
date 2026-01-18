@@ -1,6 +1,6 @@
 const WS_URL = "wss://chat.longapp.site/chat/chat";
-const username = "duckute";
-const password = "ducvan";
+const username = "22130050";
+const password = "123";
 const targetUser = "22130030@st.hcmuaf.edu.vn";
 const page = 1;
 
