@@ -118,7 +118,7 @@
 
 .room-action-item .create-room-text {
     font-size: 1.35rem;
-    color: #4b5563;
+    color: var(--text-sub);
     font-weight: 500;
     user-select: none;
 }
@@ -146,7 +146,6 @@
     border-bottom: 1px solid #ddd;
     font-size: 1.95rem;
     font-weight: 700;
-    color: #1a1a1a;
     display: flow;
     align-items: center;
 }

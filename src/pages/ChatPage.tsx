@@ -9,7 +9,7 @@ import "../styles/base.css";
 import ConversationItem from "../components/conversations/ConversationItem";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {ChangeEvent, useEffect, useRef, useState} from "react";
-import {faIcons, faImage, faPaperPlane, faPlus, faCircle,faVideo, faPaperclip, faFaceSmileBeam,faMoon, faSun} from "@fortawesome/free-solid-svg-icons";
+import {faIcons, faImage, faPaperPlane, faPlus, faCircle, faVideo, faPaperclip, faFaceSmileBeam, faMoon, faSun, faMicrophone, faStop} from "@fortawesome/free-solid-svg-icons";
 import {createRoomApi, getConversationApi, joinRoomApi} from "../services/chatService";
 import {uploadFileToCloudinary} from "../services/cloudinaryUpload";
 import EmojiPicker, {EmojiClickData} from "emoji-picker-react";
@@ -64,6 +64,7 @@ function ChatAppContent() {
     const IMAGE_PREFIX = "__IMG__:";
     const VIDEO_PREFIX = "__VID__:";
     const FILE_PREFIX  = "__FILE__:";
+    const AUDIO_PREFIX = "__AUD__:";
     const STICKER_PREFIX = "__STK__:";
     const RECENT_STICKER_KEY = "recent_stickers_v1";
 
@@ -350,6 +351,213 @@ function ChatAppContent() {
             setUploadProgress(0);
         }
     };
+    // ===== VOICE (MIC) =====
+    const [showVoiceModal, setShowVoiceModal] = useState(false);
+    const [isRecording, setIsRecording] = useState(false);
+    const [voiceSeconds, setVoiceSeconds] = useState(0);
+    const [voiceBlob, setVoiceBlob] = useState<Blob | null>(null);
+    const [voicePreviewUrl, setVoicePreviewUrl] = useState<string>("");
+    const [voiceUploading, setVoiceUploading] = useState(false);
+    const [voiceUploadProgress, setVoiceUploadProgress] = useState(0);
+    const [voiceError, setVoiceError] = useState<string>("");
+
+    const voiceStreamRef = useRef<MediaStream | null>(null);
+    const voiceRecorderRef = useRef<MediaRecorder | null>(null);
+    const voiceChunksRef = useRef<BlobPart[]>([]);
+    const voiceTimerRef = useRef<number | null>(null);
+    const autoSendRef = useRef(false);
+
+    const formatMMSS = (s: number) => {
+        const mm = String(Math.floor(s / 60)).padStart(2, "0");
+        const ss = String(s % 60).padStart(2, "0");
+        return `${mm}:${ss}`;
+    };
+
+    const pickVoiceMimeType = () => {
+        const candidates = ["audio/webm;codecs=opus", "audio/webm", "audio/ogg;codecs=opus", "audio/ogg"];
+        if (typeof MediaRecorder === "undefined") return "";
+        return candidates.find((t) => MediaRecorder.isTypeSupported(t)) || "";
+    };
+
+    const resetVoiceState = () => {
+        if (voiceTimerRef.current) {
+            window.clearInterval(voiceTimerRef.current);
+            voiceTimerRef.current = null;
+        }
+        voiceRecorderRef.current = null;
+        voiceChunksRef.current = [];
+        voiceStreamRef.current?.getTracks().forEach((t) => t.stop());
+        voiceStreamRef.current = null;
+
+        if (voicePreviewUrl) URL.revokeObjectURL(voicePreviewUrl);
+        setVoicePreviewUrl("");
+        setVoiceBlob(null);
+        setVoiceSeconds(0);
+        setVoiceError("");
+        setVoiceUploading(false);
+        setVoiceUploadProgress(0);
+        setIsRecording(false);
+    };
+
+    const startVoiceRecord = async () => {
+        if (!currentConversation) {
+            alert("Bạn hãy chọn 1 cuộc trò chuyện trước.");
+            return;
+        }
+        if (voiceUploading || uploading) return;
+
+        setShowVoiceModal(true);
+        setVoiceError("");
+        setVoiceBlob(null);
+        if (voicePreviewUrl) URL.revokeObjectURL(voicePreviewUrl);
+        setVoicePreviewUrl("");
+
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                audio: {
+                    channelCount: 1,
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    autoGainControl: true,
+                },
+            });
+            voiceStreamRef.current = stream;
+
+            const mimeType = pickVoiceMimeType();
+            const recorder = new MediaRecorder(
+                stream,
+                mimeType
+                    ? { mimeType, audioBitsPerSecond: 24000 }
+                    : { audioBitsPerSecond: 24000 }
+            );
+            voiceRecorderRef.current = recorder;
+            voiceChunksRef.current = [];
+
+            recorder.ondataavailable = (e) => {
+                if (e.data && e.data.size > 0) voiceChunksRef.current.push(e.data);
+            };
+
+            recorder.onstop = () => {
+                const blob = new Blob(voiceChunksRef.current, { type: recorder.mimeType || "audio/webm" });
+
+                if (autoSendRef.current) {
+                    autoSendRef.current = false;
+
+                    if (!currentConversation) {
+                        setVoiceError("Chưa chọn cuộc trò chuyện.");
+                        return;
+                    }
+
+                    if (blob.size < 1500) {
+                        setVoiceError("Voice quá ngắn, hãy thử lại.");
+                        setTimeout(() => closeVoiceModal(), 500);
+                        return;
+                    }
+
+                    void (async () => {
+                        try {
+                            setVoiceUploading(true);
+                            setVoiceUploadProgress(0);
+                            setVoiceError("");
+
+                            const ext = blob.type.includes("ogg") ? "ogg" : "webm";
+                            const file = new File([blob], `voice_${Date.now()}.${ext}`, { type: blob.type || "audio/webm" });
+
+                            const url = await uploadFileToCloudinary(file, setVoiceUploadProgress);
+                            sendMessage(currentConversation, `${AUDIO_PREFIX}${url}`);
+
+                            closeVoiceModal();
+                        } catch (err: any) {
+                            setVoiceError(err?.message || "Upload voice thất bại");
+                            setVoiceUploading(false);
+                        }
+                    })();
+
+                    return;
+                }
+
+                // chế độ preview + bấm Gửi (nếu bạn muốn giữ)
+                setVoiceBlob(blob);
+                const url = URL.createObjectURL(blob);
+                setVoicePreviewUrl(url);
+            };
+
+            // ✅ BẮT ĐẦU GHI ÂM
+            recorder.start();
+            setIsRecording(true);
+            setVoiceSeconds(0);
+
+            voiceTimerRef.current = window.setInterval(() => {
+                setVoiceSeconds((s) => s + 1);
+            }, 1000);
+        } catch (err: any) {
+            setVoiceError(err?.message || "Không bật được micro. Hãy cấp quyền mic cho trình duyệt.");
+            setIsRecording(false);
+        }
+    };
+
+    const stopVoiceRecord = () => {
+        if (!isRecording) return;
+
+        if (voiceTimerRef.current) {
+            window.clearInterval(voiceTimerRef.current);
+            voiceTimerRef.current = null;
+        }
+
+        try {
+            voiceRecorderRef.current?.stop();
+        } catch {}
+
+        setIsRecording(false);
+
+        voiceStreamRef.current?.getTracks().forEach((t) => t.stop());
+        voiceStreamRef.current = null;
+    };
+
+    const stopAndSendVoice = () => {
+        if (!isRecording) return;
+        autoSendRef.current = true;
+        stopVoiceRecord();
+    };
+
+    const closeVoiceModal = () => {
+        if (isRecording) stopVoiceRecord();
+        resetVoiceState();
+        setShowVoiceModal(false);
+    };
+
+    const confirmSendVoice = async () => {
+        if (!currentConversation) return;
+        if (!voiceBlob) return;
+
+        setVoiceUploading(true);
+        setVoiceUploadProgress(0);
+        setVoiceError("");
+
+        try {
+            const ext = voiceBlob.type.includes("ogg") ? "ogg" : "webm";
+            const file = new File([voiceBlob], `voice_${Date.now()}.${ext}`, { type: voiceBlob.type || "audio/webm" });
+
+            const url = await uploadFileToCloudinary(file, setVoiceUploadProgress);
+            sendMessage(currentConversation, `${AUDIO_PREFIX}${url}`);
+
+            closeVoiceModal();
+        } catch (err: any) {
+            setVoiceError(err?.message || "Upload voice thất bại");
+            setVoiceUploading(false);
+        }
+    };
+
+// cleanup khi unmount
+    useEffect(() => {
+        return () => {
+            try {
+                if (isRecording) stopVoiceRecord();
+                resetVoiceState();
+            } catch {}
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
     useEffect(() => {
         if (!showUploadModal) return;
         const onKeyDown = (e: KeyboardEvent) => {
@@ -465,7 +673,7 @@ function ChatAppContent() {
                                             name={conversation.name}
                                             actionTime={conversation.actionTime}
                                             type={conversation.type}
-                                            avatar={getAvatarByIdentity(conversation.name)}   // ✅ thêm dòng này
+                                            avatar={getAvatarByIdentity(conversation.name)}
                                             isActive={currentConversation === conversation.name}
                                         />
                                     ))}
@@ -594,8 +802,21 @@ function ChatAppContent() {
                                     icon={faFaceSmileBeam} onClick={() => setShowEmoji((v) => !v)}
                                     title="Emoji"
                                 />
+                                <FontAwesomeIcon
+                                    className={`toolbar-icon ${((uploading || voiceUploading) && !isRecording) ? "toolbar-icon--disabled" : ""}`}
+                                    icon={isRecording ? faStop : faMicrophone}
+                                    onClick={() => {
+                                        if (uploading || voiceUploading) return;
+                                        if (isRecording) stopAndSendVoice();
+                                        else startVoiceRecord();
+                                    }}
+                                    title={isRecording ? "Dừng ghi âm" : "Ghi âm"}
+                                />
                                 {uploading && (
                                     <span className="upload-progress">{Math.round(uploadProgress)}%</span>
+                                )}
+                                {voiceUploading && (
+                                 <span className="upload-progress">Voice {Math.round(voiceUploadProgress)}%</span>
                                 )}
                             </div>
 
@@ -727,7 +948,49 @@ function ChatAppContent() {
                         {avatarUploading && (
                             <span className="upload-progress">{Math.round(avatarUploadProgress)}%</span>
                         )}
+                        {showVoiceModal && (
+                            <div className="modal-overlay">
+                                <div className="modal upload-modal">
+                                    <h3>{isRecording ? "Đang ghi âm..." : (voiceBlob ? "Gửi ghi âm?" : "Ghi âm")}</h3>
 
+                                    <div className="upload-preview" style={{ padding: 12, width: "100%" }}>
+                                        <div style={{ fontSize: 24, fontWeight: 700, textAlign: "center", marginBottom: 10 }}>
+                                            {formatMMSS(voiceSeconds)}
+                                        </div>
+
+                                        {!isRecording && voicePreviewUrl && (
+                                            <audio controls preload="metadata" src={voicePreviewUrl} style={{ width: "100%" }} />
+                                        )}
+
+                                        {voiceUploading && (
+                                            <div style={{ marginTop: 10, textAlign: "center" }}>
+                                                Đang upload: {Math.round(voiceUploadProgress)}%
+                                            </div>
+                                        )}
+
+                                        {voiceError && (
+                                            <div style={{ marginTop: 10, color: "red", textAlign: "center" }}>
+                                                {voiceError}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    <div className="modal-actions">
+                                        <button onClick={closeVoiceModal} disabled={voiceUploading}>Hủy</button>
+
+                                        {isRecording ? (
+                                            <button className="primary" onClick={stopAndSendVoice} disabled={voiceUploading}>
+                                                Dừng
+                                            </button>
+                                        ) : (
+                                            <button className="primary" onClick={confirmSendVoice} disabled={!voiceBlob || voiceUploading}>
+                                                Gửi
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                         <div className="modal-actions">
                             <button onClick={closeAvatarModal} disabled={avatarUploading}>
                                 Hủy

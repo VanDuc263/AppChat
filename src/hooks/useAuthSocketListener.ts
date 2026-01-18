@@ -35,7 +35,7 @@ export function useAuthSocketListener() {
     const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const forceRelogin = () => {
-        console.warn("⛔ Auth timeout → force login");
+        console.warn(" Auth timeout → force login");
 
         localStorage.removeItem("username");
         localStorage.removeItem("re_login");
@@ -53,12 +53,12 @@ export function useAuthSocketListener() {
         const reLoginCode = localStorage.getItem("re_login");
 
         /* =====================
-           1️⃣ SOCKET LISTENER (LUÔN LUÔN GẮN)
+           1 SOCKET LISTENER (LUÔN LUÔN GẮN)
         ====================== */
         const onMessage = (ev: MessageEvent) => {
             try {
                 const res = JSON.parse(ev.data);
-                console.log("📩 SOCKET:", res);
+                console.log(" SOCKET:", res);
 
                 // ===== REGISTER =====
                 if (res.event === "REGISTER") {
@@ -73,7 +73,7 @@ export function useAuthSocketListener() {
                     (res.event === "LOGIN" || res.event === "RE_LOGIN") &&
                     res.status === "success"
                 ) {
-                    console.log("✅ Auth success");
+                    console.log(" Auth success");
 
                     hasSuccessRef.current = true;
                     retryTimeoutRef.current &&
@@ -92,7 +92,7 @@ export function useAuthSocketListener() {
                     res.status === "error" &&
                     (res.event === "LOGIN" || res.event === "RE_LOGIN")
                 ) {
-                    console.error("❌ Auth error");
+                    console.error(" Auth error");
                     forceRelogin();
                 }
             } catch (err) {
@@ -103,7 +103,7 @@ export function useAuthSocketListener() {
         socket.addEventListener("message", onMessage);
 
         /* =====================
-           2️⃣ AUTH / RELOGIN LOGIC
+           2️ AUTH / RELOGIN LOGIC
         ====================== */
         const attemptRelogin = async () => {
             if (!username || !reLoginCode) {
@@ -114,16 +114,16 @@ export function useAuthSocketListener() {
             if (hasSuccessRef.current) return;
 
             if (retryCount >= MAX_RETRY) {
-                console.error("❌ Max retry reached");
+                console.error(" Max retry reached");
                 forceRelogin();
                 return;
             }
 
             try {
-                console.log("⏳ Waiting socket...");
+                console.log(" Waiting socket...");
                 await waitForSocketOpen(socket);
 
-                console.log(`📡 RE_LOGIN attempt ${retryCount + 1}`);
+                console.log(` RE_LOGIN attempt ${retryCount + 1}`);
                 reLoginApi(username, reLoginCode);
 
                 retryTimeoutRef.current = setTimeout(() => {
