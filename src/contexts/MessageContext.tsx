@@ -9,7 +9,10 @@ export interface Message {
     mes: string;
     type: number;
 }
-
+export interface Member{
+    id : number;
+    name : string
+}
 export interface Conversation {
     name: string;
     type: number;
@@ -27,12 +30,12 @@ interface MessageContextType {
     currentConversation: string | null;
     currentOnline : boolean | null;
     setCurrentOnline : (status : boolean) => void;
-
+    isRoom : boolean | null
     setCurrentConversation: (name: string | null) => void;
-
+    totalMember : number | null;
     sendMessage: (to: string, text: string) => void;
     addMessage: (message: Message) => void;
-
+    members : Member[] | null;
     replaceMessages: (messages: Message[]) => void;
     appendMessages: (messages: Message[]) => void;
     replaceConversations: (conversations: Conversation[]) => void;
@@ -40,7 +43,7 @@ interface MessageContextType {
     selectConversation: (username: string, page?: number) => void;
 
     searchUser : (username : string) => void;
-
+    setRoomMember : (totalMem,members : Member[]) => void;
     searchState : SearchState;
     onSearchResult : (status : boolean) => void;
     resetSearch : () => void;
@@ -61,7 +64,9 @@ export function MessageProvider({ children }: { children: ReactNode }) {
     const currentUsernameSearchRef = useRef("");
     const loadModeRef = useRef<"INIT" | "LOAD_MORE">("INIT");
     const [shouldAutoScroll, setShouldAutoScroll] = useState(true);
-
+    const [isRoom,setIsRoom] = useState<boolean | null>(null)
+    const [totalMember,setTotalMember] = useState<number | null>(null)
+    const [members,setMembers] = useState<Member[] | null>([])
     // ========= ACTIONS =========
 
     const addMessage = (message: Message) => {
@@ -138,7 +143,7 @@ export function MessageProvider({ children }: { children: ReactNode }) {
         setPage(pageParam);
         setMessages([]);
         const isRoom = isRoomConversation(name);
-
+        setIsRoom(isRoom)
         if (isRoom) {
             console.log('is room')
             getRoomMessageApi(name, pageParam);
@@ -181,7 +186,10 @@ export function MessageProvider({ children }: { children: ReactNode }) {
             appendMessages(newMessages);
         }
     };
-
+    const setRoomMember = (totalMember,members:Member[]) => {
+        setTotalMember(totalMember)
+        setMembers(members)
+    }
     return (
         <MessageContext.Provider
             value={{
@@ -192,9 +200,10 @@ export function MessageProvider({ children }: { children: ReactNode }) {
                 currentOnline,
                 setCurrentOnline,
                 currentConversation,
-
+                isRoom,
                 setCurrentConversation,
-
+                totalMember,
+                setRoomMember,
                 sendMessage,
                 addMessage,
                 replaceMessages,
@@ -202,7 +211,7 @@ export function MessageProvider({ children }: { children: ReactNode }) {
                 replaceConversations,
                 selectConversation,
                 handleMessageResponse,
-
+                members,
                 searchUser,
                 searchState,
                 onSearchResult,

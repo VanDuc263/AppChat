@@ -1,0 +1,237 @@
+/* =========================
+   ROOM MEMBER WRAPPER
+========================= */
+.room-member-box {
+    position: relative;
+    padding: 8px 12px;
+    font-size: 14px;
+}
+
+/* =========================
+   HEADER (CLICK TO OPEN)
+========================= */
+.room-member-count {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s ease;
+}
+
+.room-member-count:hover {
+    background: #eef2ff;
+}
+
+/* Arrow */
+.arrow {
+    font-size: 12px;
+    transition: transform 0.25s ease;
+}
+
+.arrow.open {
+    transform: rotate(180deg);
+}
+
+/* =========================
+   MEMBER DROPDOWN MENU
+========================= */
+.room-member-list {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 10px;
+    width: 220px;
+    max-height: 240px;
+
+    background: #ffffff;
+    border-radius: 14px;
+    border: 1px solid #f1f1f1;
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.18);
+
+    list-style: none;
+    padding: 6px 0;
+    z-index: 100;
+
+    overflow-y: auto;
+    animation: menuFade 0.2s ease;
+}
+
+/* Menu animation */
+@keyframes menuFade {
+    from {
+        opacity: 0;
+        transform: translateY(-6px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Menu header */
+.room-member-list::before {
+    content: "Thành viên trong phòng";
+    display: block;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 4px;
+}
+
+/* =========================
+   MEMBER ITEM
+========================= */
+.room-member-item {
+    display: flex;
+    align-items: center;
+    padding: 10px 14px;
+    cursor: pointer;
+    border-radius: 10px;
+    transition: background 0.15s ease, padding-left 0.15s ease;
+}
+
+.room-member-item:hover {
+    background: #f1f5f9;
+    padding-left: 18px;
+}
+
+/* Empty state */
+.room-member-empty {
+    padding: 12px 14px;
+    color: #94a3b8;
+    font-style: italic;
+}
+
+/* =========================
+   SCROLLBAR (CLEAN)
+========================= */
+.room-member-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.room-member-list::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+.room-member-list::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+.room-member-list {
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e1 transparent;
+}
+
+/* =========================
+   POPUP OVERLAY
+========================= */
+.popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: overlayFade 0.2s ease;
+}
+
+@keyframes overlayFade {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* =========================
+   POPUP CONTENT
+========================= */
+.popup-content {
+    width: 320px;
+    padding: 24px;
+    background: #ffffff;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+    animation: popupScale 0.2s ease;
+}
+
+@keyframes popupScale {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.popup-content h3 {
+    margin: 0;
+    font-size: 17px;
+}
+
+.popup-content p {
+    margin: 10px 0 4px;
+    color: #64748b;
+}
+
+.popup-content strong {
+    display: block;
+    margin-top: 4px;
+    font-size: 15px;
+    color: #0f172a;
+}
+
+/* =========================
+   POPUP ACTIONS
+========================= */
+.popup-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.popup-actions button {
+    flex: 1;
+    padding: 10px 0;
+    border-radius: 10px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.1s ease, background 0.2s ease;
+}
+
+/* Primary button */
+.popup-actions button:not(.cancel) {
+    background: #3b82f6;
+    color: #ffffff;
+}
+
+.popup-actions button:not(.cancel):hover {
+    background: #2563eb;
+}
+
+/* Cancel button */
+.popup-actions .cancel {
+    background: #e5e7eb;
+    color: #334155;
+}
+
+.popup-actions .cancel:hover {
+    background: #d1d5db;
+}
+
+.popup-actions button:active {
+    transform: scale(0.96);
+}
