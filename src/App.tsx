@@ -2,10 +2,17 @@ import {AuthProvider} from "./contexts/AuthContext";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import {useAuthSocketListener} from "./hooks/useAuthSocketListener";
 import AppRoutes from "./routes/AppRoutes";
+import SocketOverlay from "./components/SocketOverlay";
 
 function AppContext(){
     useAuthSocketListener()
-    return <AppRoutes/>
+
+
+    return (
+        <>
+            <AppRoutes />
+        </>
+    );
 }
 
 function App() {

@@ -73,3 +73,25 @@ export const getIncomingFriendRequests = async (username: string) => {
     const snap = await getDocs(q);
     return snap.docs.map(d => ({ id: d.id, ...d.data() }));
 };
+export const getFriends = async (me: string) => {
+    const q = query(
+        collection(db, "friends"),
+        where("users", "array-contains", me)
+    );
+
+    const snap = await getDocs(q);
+
+    return snap.docs.map(d => {
+        const data = d.data();
+        const users = data.users as string[];
+
+        return {
+            friend: users.find(u => u !== me)!, // tên bạn
+        };
+    });
+};
+export const isFriend = async (me: string, other: string) => {
+    const friendId = [me, other].sort().join("_");
+    const snap = await getDoc(doc(db, "friends", friendId));
+    return snap.exists();
+};
